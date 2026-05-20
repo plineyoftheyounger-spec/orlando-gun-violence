@@ -987,18 +987,20 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
 
     html = f"""
 <style>
-  .leaflet-control-zoom {{ display:none !important; }}
   #um-control {{
     position:fixed; top:46px; left:50%; transform:translateX(-50%);
     background:white; border:1px solid #bbb; border-radius:8px;
     padding:8px 16px; z-index:1000; font-family:Arial,sans-serif; font-size:13px;
-    display:flex; align-items:center; gap:14px;
-    box-shadow:0 2px 8px rgba(0,0,0,.14); white-space:nowrap;
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.14);
+    max-width:calc(100vw - 40px); box-sizing:border-box;
   }}
-  #um-control label {{ cursor:pointer; display:flex; align-items:center; gap:4px; }}
+  #um-control label {{ cursor:pointer; display:flex; align-items:center; gap:4px; white-space:nowrap; }}
   #um-control .sep {{ color:#ccc; font-size:16px; margin:0 2px; }}
   #um-control input[type=search] {{
-    padding:4px 8px; border:1px solid #ccc; border-radius:4px; width:190px; font-size:13px;
+    padding:4px 8px; border:1px solid #ccc; border-radius:4px;
+    width:min(190px, calc(100vw - 80px)); font-size:13px;
   }}
   .sym-before {{ color:{COLOR_BEFORE}; font-weight:bold; }}
   .sym-after  {{ color:{COLOR_AFTER};  font-weight:bold; }}
