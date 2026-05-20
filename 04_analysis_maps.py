@@ -613,9 +613,9 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
     stats_json  = json.dumps(nbd_stats,  ensure_ascii=False)
     bounds_json = json.dumps(nbd_bounds, ensure_ascii=False)
 
-    # Build JS layer lookup using real folium variable names
+    # Store string names only — looked up lazily via window[] at call time
     def reg_js(reg):
-        pairs = ", ".join(f'"{k}": window["{v}"]' for k, v in reg.items())
+        pairs = ", ".join(f'"{k}": "{v}"' for k, v in reg.items())
         return "{" + pairs + "}"
 
     control_html = f"""
@@ -672,8 +672,9 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
 
 <script>
 (function() {{
-  var MAP1 = window['{map1_id}'];
-  var MAP2 = window['{map2_id}'];
+  // IDs stored as strings — resolved via window[] lazily after map init
+  var MAP1_ID = '{map1_id}';
+  var MAP2_ID = '{map2_id}';
   var LAYERS1 = {reg_js(reg1)};
   var LAYERS2 = {reg_js(reg2)};
   var STATS  = {stats_json};
@@ -682,8 +683,9 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
   var DEFAULT_OFF = ['Fatal shootings', 'Injury shootings', 'All neighborhoods', 'Kidz Zone neighborhoods'];
 
   function setLayer(name, show) {{
-    [[MAP1, LAYERS1], [MAP2, LAYERS2]].forEach(function(pair) {{
-      var map = pair[0], layer = pair[1][name];
+    [[MAP1_ID, LAYERS1], [MAP2_ID, LAYERS2]].forEach(function(pair) {{
+      var map   = window[pair[0]];
+      var layer = window[pair[1][name]];
       if (!map || !layer) return;
       if (show && !map.hasLayer(layer)) map.addLayer(layer);
       else if (!show && map.hasLayer(layer)) map.removeLayer(layer);
@@ -742,8 +744,10 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
     document.getElementById('nbd-search').value = '';
   }});
 
-  // Hide default-off layers immediately
-  DEFAULT_OFF.forEach(function(name) {{ setLayer(name, false); }});
+  // Hide default-off layers after all map init scripts have run
+  window.addEventListener('load', function() {{
+    DEFAULT_OFF.forEach(function(name) {{ setLayer(name, false); }});
+  }});
 }})();
 </script>
 """
