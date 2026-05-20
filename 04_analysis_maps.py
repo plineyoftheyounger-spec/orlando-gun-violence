@@ -510,14 +510,10 @@ def _nbd_style(color, weight=1.5, fill_opacity=0.06):
 def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
     """
     Synced side-by-side dot map: 2018-2022 (left) vs 2023-Present (right).
-    Toggles: incident type (all / fatal / injury) and boundary layers
-    (all neighborhoods, focus neighborhoods, Kidz Zone neighborhoods).
+    Layer toggles on either side sync to the other automatically.
     """
     e1 = era1(df)
     e2 = era2(df)
-
-    focus_names = list(NEIGHBORHOODS.values())
-    focus_gdf   = neighborhoods_gdf[neighborhoods_gdf["NeighborhoodName"].isin(focus_names)]
 
     m = DualMap(
         location=[config.ORLANDO_LAT, config.ORLANDO_LON],
@@ -526,15 +522,14 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
         tiles=None,
     )
 
-    # Base tiles
     for side in (m.m1, m.m2):
         folium.TileLayer("CartoDB positron", name="Base map").add_to(side)
 
     # ── Incident dots ──────────────────────────────────────────────────────────
     def add_incident_layers(side, era_df):
-        dot_layer(era_df,             "All incidents",    "#555555", show=True ).add_to(side)
-        dot_layer(homicides(era_df),  "Fatal shootings",  "darkred", show=False).add_to(side)
-        dot_layer(injury_only(era_df),"Injury shootings", "orange",  show=False).add_to(side)
+        dot_layer(era_df,              "All incidents",    "#555555", show=True ).add_to(side)
+        dot_layer(homicides(era_df),   "Fatal shootings",  "darkred", show=False).add_to(side)
+        dot_layer(injury_only(era_df), "Injury shootings", "orange",  show=False).add_to(side)
 
     add_incident_layers(m.m1, e1)
     add_incident_layers(m.m2, e2)
@@ -546,16 +541,6 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
             name="All neighborhoods",
             show=False,
             style_function=_nbd_style("#6b7280"),
-            tooltip=folium.GeoJsonTooltip(
-                fields=["NeighborhoodName"], aliases=["Neighborhood:"]
-            ),
-        ).add_to(side)
-
-        folium.GeoJson(
-            focus_gdf.to_json(),
-            name="Focus neighborhoods",
-            show=False,
-            style_function=_nbd_style("#d6604d", weight=2.5, fill_opacity=0.10),
             tooltip=folium.GeoJsonTooltip(
                 fields=["NeighborhoodName"], aliases=["Neighborhood:"]
             ),
@@ -574,33 +559,70 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
     add_boundary_layers(m.m1)
     add_boundary_layers(m.m2)
 
-    # ── Layer controls ─────────────────────────────────────────────────────────
     folium.LayerControl(collapsed=False).add_to(m.m1)
     folium.LayerControl(collapsed=False).add_to(m.m2)
 
-    # ── Titles (positioned to left and right halves of viewport) ──────────────
+    # ── Titles ─────────────────────────────────────────────────────────────────
     n1 = len(e1); k1 = int(e1["killed"].sum()); i1 = int(e1["injured"].sum())
     n2 = len(e2); k2 = int(e2["killed"].sum()); i2 = int(e2["injured"].sum())
 
     def _title_html(text, left_pct):
-        return f"""
-        <div style="position:fixed;top:10px;left:{left_pct}%;transform:translateX(-50%);
-             background:white;padding:8px 18px;border-radius:6px;border:1px solid #aaa;
-             z-index:1000;font-family:Arial,sans-serif;font-size:14px;text-align:center;
-             white-space:nowrap;pointer-events:none;">
-            {text}
-        </div>"""
+        return (
+            f'<div style="position:fixed;top:10px;left:{left_pct}%;'
+            f'transform:translateX(-50%);background:white;padding:8px 18px;'
+            f'border-radius:6px;border:1px solid #aaa;z-index:1000;'
+            f'font-family:Arial,sans-serif;font-size:14px;text-align:center;'
+            f'white-space:nowrap;pointer-events:none;">{text}</div>'
+        )
 
     m.m1.get_root().html.add_child(folium.Element(_title_html(
-        f"<b>Before: {ERA_1_LABEL}</b> &nbsp;·&nbsp; "
+        f"<b>Before: {ERA_1_LABEL}</b> &nbsp;&middot;&nbsp; "
         f"<small>{n1:,} incidents &nbsp;|&nbsp; {k1:,} killed &nbsp;|&nbsp; {i1:,} injured</small>",
         25
     )))
     m.m2.get_root().html.add_child(folium.Element(_title_html(
-        f"<b>After: {ERA_2_LABEL}</b> &nbsp;·&nbsp; "
+        f"<b>After: {ERA_2_LABEL}</b> &nbsp;&middot;&nbsp; "
         f"<small>{n2:,} incidents &nbsp;|&nbsp; {k2:,} killed &nbsp;|&nbsp; {i2:,} injured</small>",
         75
     )))
+
+    # ── Sync layer toggles between both sides ──────────────────────────────────
+    sync_js = """
+    <script>
+    setTimeout(function() {
+        var controls = document.querySelectorAll('.leaflet-control-layers-overlays');
+        if (controls.length < 2) return;
+
+        function getLabelMap(ctrl) {
+            var out = {};
+            ctrl.querySelectorAll('label').forEach(function(lbl) {
+                var span = lbl.querySelector('span');
+                var inp  = lbl.querySelector('input');
+                if (span && inp) out[span.textContent.trim()] = inp;
+            });
+            return out;
+        }
+
+        var syncing = false;
+        function wire(srcCtrl, tgtCtrl) {
+            var src = getLabelMap(srcCtrl);
+            var tgt = getLabelMap(tgtCtrl);
+            Object.keys(src).forEach(function(name) {
+                if (!tgt[name]) return;
+                src[name].addEventListener('change', function() {
+                    if (syncing) return;
+                    syncing = true;
+                    if (tgt[name].checked !== src[name].checked) tgt[name].click();
+                    syncing = false;
+                });
+            });
+        }
+        wire(controls[0], controls[1]);
+        wire(controls[1], controls[0]);
+    }, 1500);
+    </script>
+    """
+    m.get_root().html.add_child(folium.Element(sync_js))
 
     save_map(m, "sidebyside_advanced_peace.html")
 
