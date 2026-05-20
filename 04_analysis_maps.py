@@ -177,12 +177,12 @@ def shaped_layer(df, name, color, shape, show=True):
             location=[row["lat"], row["lon"]],
             icon=folium.DivIcon(
                 html=(
-                    f'<span style="font-size:15px;font-weight:bold;color:{color};'
+                    f'<span style="font-size:22px;font-weight:bold;color:{color};'
                     f'text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,'
                     f'-1px 1px 0 #fff,1px 1px 0 #fff;">{shape}</span>'
                 ),
-                icon_size=(15, 15),
-                icon_anchor=(7, 8),
+                icon_size=(22, 22),
+                icon_anchor=(11, 12),
             ),
             popup=folium.Popup(popup, max_width=280),
         ).add_to(group)
