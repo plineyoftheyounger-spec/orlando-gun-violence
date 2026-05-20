@@ -510,11 +510,44 @@ def _nbd_style(color, weight=1.5, fill_opacity=0.06):
 def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
     """
     Synced side-by-side dot map: 2018-2022 (left) vs 2023-Present (right).
-    Layer toggles on either side sync to the other automatically.
+    Single universal control bar across the top controls both maps.
+    Neighborhood search zooms both maps and shows an incident stats table.
     """
     e1 = era1(df)
     e2 = era2(df)
 
+    # ── Pre-compute neighborhood stats for the search table ────────────────────
+    inc_gdf = gpd.GeoDataFrame(
+        df, geometry=gpd.points_from_xy(df["lon"], df["lat"]), crs="EPSG:4326"
+    )
+    joined = gpd.sjoin(
+        inc_gdf,
+        neighborhoods_gdf[["NeighborhoodName", "geometry"]],
+        how="left", predicate="within"
+    ).drop(columns=["geometry", "index_right"], errors="ignore")
+
+    nbd_stats = {}
+    for name, grp in pd.DataFrame(joined).groupby("NeighborhoodName"):
+        b = grp[grp["year"].isin(ERA_1_YEARS)]
+        a = grp[grp["year"].isin(ERA_2_YEARS)]
+        nbd_stats[name] = {
+            "total":          len(grp),
+            "total_killed":   int(grp["killed"].sum()),
+            "total_injured":  int(grp["injured"].sum()),
+            "before_count":   len(b),
+            "before_killed":  int(b["killed"].sum()),
+            "before_injured": int(b["injured"].sum()),
+            "after_count":    len(a),
+            "after_killed":   int(a["killed"].sum()),
+            "after_injured":  int(a["injured"].sum()),
+        }
+
+    nbd_bounds = {}
+    for _, row in neighborhoods_gdf.iterrows():
+        minx, miny, maxx, maxy = row.geometry.bounds
+        nbd_bounds[row["NeighborhoodName"]] = [miny, minx, maxy, maxx]
+
+    # ── Build map ──────────────────────────────────────────────────────────────
     m = DualMap(
         location=[config.ORLANDO_LAT, config.ORLANDO_LON],
         zoom_start=config.DEFAULT_ZOOM,
@@ -525,105 +558,202 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
     for side in (m.m1, m.m2):
         folium.TileLayer("CartoDB positron", name="Base map").add_to(side)
 
-    # ── Incident dots ──────────────────────────────────────────────────────────
+    # All layers added with show=True so JS can find them in map._layers.
+    # Default-off layers are removed by JS immediately after page load.
     def add_incident_layers(side, era_df):
-        dot_layer(era_df,              "All incidents",    "#555555", show=True ).add_to(side)
-        dot_layer(homicides(era_df),   "Fatal shootings",  "darkred", show=False).add_to(side)
-        dot_layer(injury_only(era_df), "Injury shootings", "orange",  show=False).add_to(side)
+        dot_layer(era_df,              "All incidents",    "#555555", show=True).add_to(side)
+        dot_layer(homicides(era_df),   "Fatal shootings",  "darkred", show=True).add_to(side)
+        dot_layer(injury_only(era_df), "Injury shootings", "orange",  show=True).add_to(side)
 
-    add_incident_layers(m.m1, e1)
-    add_incident_layers(m.m2, e2)
-
-    # ── Boundary layers ────────────────────────────────────────────────────────
     def add_boundary_layers(side):
         folium.GeoJson(
             neighborhoods_gdf.to_json(),
-            name="All neighborhoods",
-            show=False,
+            name="All neighborhoods", show=True,
             style_function=_nbd_style("#6b7280"),
             tooltip=folium.GeoJsonTooltip(
-                fields=["NeighborhoodName"], aliases=["Neighborhood:"]
-            ),
+                fields=["NeighborhoodName"], aliases=["Neighborhood:"]),
         ).add_to(side)
-
         folium.GeoJson(
             kidz_zones_gdf.to_json(),
-            name="Kidz Zone neighborhoods",
-            show=False,
+            name="Kidz Zone neighborhoods", show=True,
             style_function=_nbd_style("#2ca25f", weight=2.5, fill_opacity=0.12),
             tooltip=folium.GeoJsonTooltip(
-                fields=["KZ_Name"], aliases=["Zone:"]
-            ),
+                fields=["KZ_Name"], aliases=["Zone:"]),
         ).add_to(side)
 
+    add_incident_layers(m.m1, e1)
+    add_incident_layers(m.m2, e2)
     add_boundary_layers(m.m1)
     add_boundary_layers(m.m2)
 
-    folium.LayerControl(collapsed=False).add_to(m.m1)
-    folium.LayerControl(collapsed=False).add_to(m.m2)
-
-    # ── Titles ─────────────────────────────────────────────────────────────────
+    # ── Era titles ─────────────────────────────────────────────────────────────
     n1 = len(e1); k1 = int(e1["killed"].sum()); i1 = int(e1["injured"].sum())
     n2 = len(e2); k2 = int(e2["killed"].sum()); i2 = int(e2["injured"].sum())
 
-    def _title_html(text, left_pct):
-        return (
-            f'<div style="position:fixed;top:10px;left:{left_pct}%;'
-            f'transform:translateX(-50%);background:white;padding:8px 18px;'
-            f'border-radius:6px;border:1px solid #aaa;z-index:1000;'
-            f'font-family:Arial,sans-serif;font-size:14px;text-align:center;'
-            f'white-space:nowrap;pointer-events:none;">{text}</div>'
-        )
+    def _title(text, left_pct):
+        return (f'<div style="position:fixed;top:10px;left:{left_pct}%;transform:translateX(-50%);'
+                f'background:white;padding:6px 14px;border-radius:6px;border:1px solid #ccc;'
+                f'z-index:900;font-family:Arial,sans-serif;font-size:13px;text-align:center;'
+                f'white-space:nowrap;pointer-events:none;">{text}</div>')
 
-    m.m1.get_root().html.add_child(folium.Element(_title_html(
-        f"<b>Before: {ERA_1_LABEL}</b> &nbsp;&middot;&nbsp; "
-        f"<small>{n1:,} incidents &nbsp;|&nbsp; {k1:,} killed &nbsp;|&nbsp; {i1:,} injured</small>",
-        25
-    )))
-    m.m2.get_root().html.add_child(folium.Element(_title_html(
-        f"<b>After: {ERA_2_LABEL}</b> &nbsp;&middot;&nbsp; "
-        f"<small>{n2:,} incidents &nbsp;|&nbsp; {k2:,} killed &nbsp;|&nbsp; {i2:,} injured</small>",
-        75
-    )))
+    m.m1.get_root().html.add_child(folium.Element(_title(
+        f"<b>Before · {ERA_1_LABEL}</b> &nbsp;·&nbsp; "
+        f"<small>{n1:,} incidents &nbsp;| {k1:,} killed &nbsp;| {i1:,} injured</small>", 25)))
+    m.m2.get_root().html.add_child(folium.Element(_title(
+        f"<b>After · {ERA_2_LABEL}</b> &nbsp;·&nbsp; "
+        f"<small>{n2:,} incidents &nbsp;| {k2:,} killed &nbsp;| {i2:,} injured</small>", 75)))
 
-    # ── Sync layer toggles between both sides ──────────────────────────────────
-    sync_js = """
-    <script>
-    setTimeout(function() {
-        var controls = document.querySelectorAll('.leaflet-control-layers-overlays');
-        if (controls.length < 2) return;
+    # ── Universal control bar + neighborhood search ────────────────────────────
+    map1_id = m.m1.get_name()
+    map2_id = m.m2.get_name()
+    stats_json  = json.dumps(nbd_stats,  ensure_ascii=False)
+    bounds_json = json.dumps(nbd_bounds, ensure_ascii=False)
 
-        function getLabelMap(ctrl) {
-            var out = {};
-            ctrl.querySelectorAll('label').forEach(function(lbl) {
-                var span = lbl.querySelector('span');
-                var inp  = lbl.querySelector('input');
-                if (span && inp) out[span.textContent.trim()] = inp;
-            });
-            return out;
-        }
+    control_html = f"""
+<style>
+  #ap-control {{
+    position:fixed; top:46px; left:50%; transform:translateX(-50%);
+    background:white; border:1px solid #bbb; border-radius:8px;
+    padding:8px 16px; z-index:1000; font-family:Arial,sans-serif; font-size:13px;
+    display:flex; align-items:center; gap:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,.14); white-space:nowrap;
+  }}
+  #ap-control label {{ cursor:pointer; display:flex; align-items:center; gap:4px; }}
+  #ap-control .sep {{ color:#ccc; font-size:16px; }}
+  #ap-control input[type=search] {{
+    padding:4px 8px; border:1px solid #ccc; border-radius:4px; width:190px; font-size:13px;
+  }}
+  #ap-table {{
+    position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+    background:white; border:1px solid #bbb; border-radius:8px 8px 0 0;
+    padding:12px 20px 14px; z-index:1000; font-family:Arial,sans-serif; font-size:13px;
+    box-shadow:0 -2px 10px rgba(0,0,0,.12); min-width:440px; display:none;
+  }}
+  #ap-table table {{ border-collapse:collapse; width:100%; margin-top:8px; }}
+  #ap-table th,#ap-table td {{ border:1px solid #ddd; padding:5px 12px; }}
+  #ap-table th {{ background:#f5f5f5; text-align:left; }}
+  #ap-table td:not(:first-child) {{ text-align:right; }}
+  #ap-table .total-row {{ font-weight:bold; background:#f5f5f5; }}
+  #ap-close {{ float:right; background:none; border:none; font-size:18px; cursor:pointer; line-height:1; }}
+</style>
 
-        var syncing = false;
-        function wire(srcCtrl, tgtCtrl) {
-            var src = getLabelMap(srcCtrl);
-            var tgt = getLabelMap(tgtCtrl);
-            Object.keys(src).forEach(function(name) {
-                if (!tgt[name]) return;
-                src[name].addEventListener('change', function() {
-                    if (syncing) return;
-                    syncing = true;
-                    if (tgt[name].checked !== src[name].checked) tgt[name].click();
-                    syncing = false;
-                });
-            });
-        }
-        wire(controls[0], controls[1]);
-        wire(controls[1], controls[0]);
-    }, 1500);
-    </script>
-    """
-    m.get_root().html.add_child(folium.Element(sync_js))
+<div id="ap-control">
+  <span><b>Incidents:</b></span>
+  <label><input type="checkbox" id="cb-all" checked> All incidents</label>
+  <label><input type="checkbox" id="cb-fatal"> Fatal shootings</label>
+  <label><input type="checkbox" id="cb-injury"> Injury shootings</label>
+  <span class="sep">|</span>
+  <span><b>Boundaries:</b></span>
+  <label><input type="checkbox" id="cb-nbds"> All neighborhoods</label>
+  <label><input type="checkbox" id="cb-kz"> Kidz Zone neighborhoods</label>
+  <span class="sep">|</span>
+  <input type="search" id="nbd-search" list="nbd-list" placeholder="Search neighborhood...">
+  <datalist id="nbd-list"></datalist>
+</div>
 
+<div id="ap-table">
+  <button id="ap-close">&#x00D7;</button>
+  <span id="ap-table-title" style="font-size:14px;font-weight:bold;"></span>
+  <table>
+    <thead><tr><th>Period</th><th>Incidents</th><th>Killed</th><th>Injured</th></tr></thead>
+    <tbody id="ap-table-body"></tbody>
+  </table>
+</div>
+
+<script>
+(function() {{
+  var MAP1 = '{map1_id}';
+  var MAP2 = '{map2_id}';
+  var STATS  = {stats_json};
+  var BOUNDS = {bounds_json};
+
+  // Default-off layers (removed immediately on load)
+  var DEFAULT_OFF = ['Fatal shootings', 'Injury shootings', 'All neighborhoods', 'Kidz Zone neighborhoods'];
+
+  function getMap(id) {{ return window[id]; }}
+
+  function getLayerByName(map, name) {{
+    var found = null;
+    Object.values(map._layers).forEach(function(l) {{
+      if (l.options && l.options.name === name) found = l;
+    }});
+    return found;
+  }}
+
+  function setLayer(name, show) {{
+    [MAP1, MAP2].forEach(function(mid) {{
+      var map = getMap(mid);
+      if (!map) return;
+      var layer = getLayerByName(map, name);
+      if (!layer) return;
+      if (show && !map.hasLayer(layer)) map.addLayer(layer);
+      else if (!show && map.hasLayer(layer)) map.removeLayer(layer);
+    }});
+  }}
+
+  // Populate neighborhood datalist
+  Object.keys(BOUNDS).sort().forEach(function(name) {{
+    var opt = document.createElement('option');
+    opt.value = name;
+    document.getElementById('nbd-list').appendChild(opt);
+  }});
+
+  // Wire checkboxes
+  var cbMap = {{
+    'cb-all':   'All incidents',
+    'cb-fatal': 'Fatal shootings',
+    'cb-injury':'Injury shootings',
+    'cb-nbds':  'All neighborhoods',
+    'cb-kz':    'Kidz Zone neighborhoods'
+  }};
+  Object.keys(cbMap).forEach(function(id) {{
+    document.getElementById(id).addEventListener('change', function() {{
+      setLayer(cbMap[id], this.checked);
+    }});
+  }});
+
+  // Neighborhood search
+  document.getElementById('nbd-search').addEventListener('change', function() {{
+    var name = this.value.trim();
+    if (!BOUNDS[name]) return;
+    var b = BOUNDS[name];
+    [MAP1, MAP2].forEach(function(mid) {{
+      var map = getMap(mid);
+      if (map) map.fitBounds([[b[0], b[1]], [b[2], b[3]]]);
+    }});
+    showTable(name);
+  }});
+
+  // Stats table
+  function showTable(name) {{
+    var s = STATS[name];
+    var panel = document.getElementById('ap-table');
+    document.getElementById('ap-table-title').textContent = name;
+    var body = document.getElementById('ap-table-body');
+    body.innerHTML = [
+      ['Before (2018–2022)', s.before_count, s.before_killed, s.before_injured],
+      ['After (2023–Present)', s.after_count, s.after_killed, s.after_injured],
+      ['All years (2014–present)', s.total, s.total_killed, s.total_injured]
+    ].map(function(r, i) {{
+      var cls = i === 2 ? ' class="total-row"' : '';
+      return '<tr' + cls + '><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td></tr>';
+    }}).join('');
+    panel.style.display = 'block';
+  }}
+
+  document.getElementById('ap-close').addEventListener('click', function() {{
+    document.getElementById('ap-table').style.display = 'none';
+    document.getElementById('nbd-search').value = '';
+  }});
+
+  // Remove default-off layers on first tick
+  setTimeout(function() {{
+    DEFAULT_OFF.forEach(function(name) {{ setLayer(name, false); }});
+  }}, 0);
+}})();
+</script>
+"""
+    m.get_root().html.add_child(folium.Element(control_html))
     save_map(m, "sidebyside_advanced_peace.html")
 
 
