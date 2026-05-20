@@ -5,7 +5,7 @@ Downloads boundary GeoJSON files from the City of Orlando's ArcGIS services.
 Run this once before running 04_analysis_maps.py.
 
 Saves:
-  neighborhoods/kidz_zones.geojson            — 121 Orlando parks (Kidz Zones program)
+  neighborhoods/kidz_zones_official.geojson   — 4 Kidz Zone neighborhoods (Engelwood, Parramore, Holden Heights, Mercy Drive)
   neighborhoods/orlando_neighborhoods.geojson — official neighborhood boundaries
 """
 
@@ -14,9 +14,9 @@ import urllib.request
 import config
 
 SOURCES = {
-    "kidz_zones.geojson": (
+    "kidz_zones_official.geojson": (
         "https://services5.arcgis.com/mMuoPCaIYD4wEgDl/arcgis/rest/services"
-        "/Orlando_Kidz_Zones/FeatureServer/0/query"
+        "/Orlando_Kidz_Zones/FeatureServer/2/query"
         "?where=1%3D1&outFields=*&f=geojson"
     ),
     "orlando_neighborhoods.geojson": (

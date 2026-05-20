@@ -80,7 +80,7 @@ def load_incidents():
     return df
 
 def load_kidz_zones():
-    path = config.NEIGHBORHOODS_DIR / "kidz_zones.geojson"
+    path = config.NEIGHBORHOODS_DIR / "kidz_zones_official.geojson"
     if not path.exists():
         raise FileNotFoundError("Run 00_fetch_boundaries.py first.")
     return gpd.read_file(path).to_crs("EPSG:4326")
@@ -333,7 +333,7 @@ def make_kidz_zones_map(df, kidz_zones):
     )
     inside = gpd.sjoin(
         inc_gdf,
-        kidz_zones[["NAME", "ADDRESS", "geometry"]],
+        kidz_zones[["KZ_Name", "geometry"]],
         how="inner",
         predicate="within",
     )
@@ -343,9 +343,8 @@ def make_kidz_zones_map(df, kidz_zones):
     if not inside.empty:
         table = (
             pd.DataFrame(inside)
-            .groupby("NAME")
+            .groupby("KZ_Name")
             .agg(
-                address=("ADDRESS", "first"),
                 incidents=("date", "count"),
                 killed=("killed", "sum"),
                 injured=("injured", "sum"),
@@ -377,7 +376,7 @@ def make_kidz_zones_map(df, kidz_zones):
             "fillOpacity": 0.12,
         },
         tooltip=folium.GeoJsonTooltip(
-            fields=["NAME", "ADDRESS"], aliases=["Zone:", "Address:"]
+            fields=["KZ_Name"], aliases=["Zone:"]
         ),
     ).add_to(m)
 
@@ -387,7 +386,7 @@ def make_kidz_zones_map(df, kidz_zones):
         for _, row in pd.DataFrame(inside).iterrows():
             color = "darkred" if row["killed"] > 0 else "orange"
             popup = (
-                f"<b>Zone: {row.get('NAME', '')}</b><br>"
+                f"<b>Zone: {row.get('KZ_Name', '')}</b><br>"
                 f"<b>{row['date'].strftime('%b %d, %Y')}</b><br>"
                 f"{row.get('address', '')}<br>"
                 f"Killed: {row['killed']} &nbsp;|&nbsp; Injured: {row['injured']}"
