@@ -42,7 +42,7 @@ import json
 import pandas as pd
 import geopandas as gpd
 import folium
-from folium.plugins import HeatMap, MarkerCluster
+from folium.plugins import HeatMap, MarkerCluster, DualMap
 import numpy as np
 import branca.colormap as cm
 
@@ -499,6 +499,113 @@ def make_era_clustered_dot_map(df, title, filename):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# Advancing Peace side-by-side map
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def _nbd_style(color, weight=1.5, fill_opacity=0.06):
+    return lambda x: {"color": color, "weight": weight,
+                       "fillColor": color, "fillOpacity": fill_opacity}
+
+
+def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
+    """
+    Synced side-by-side dot map: 2018-2022 (left) vs 2023-Present (right).
+    Toggles: incident type (all / fatal / injury) and boundary layers
+    (all neighborhoods, focus neighborhoods, Kidz Zone neighborhoods).
+    """
+    e1 = era1(df)
+    e2 = era2(df)
+
+    focus_names = list(NEIGHBORHOODS.values())
+    focus_gdf   = neighborhoods_gdf[neighborhoods_gdf["NeighborhoodName"].isin(focus_names)]
+
+    m = DualMap(
+        location=[config.ORLANDO_LAT, config.ORLANDO_LON],
+        zoom_start=config.DEFAULT_ZOOM,
+        layout="horizontal",
+        tiles=None,
+    )
+
+    # Base tiles
+    for side in (m.m1, m.m2):
+        folium.TileLayer("CartoDB positron", name="Base map").add_to(side)
+
+    # ── Incident dots ──────────────────────────────────────────────────────────
+    def add_incident_layers(side, era_df):
+        dot_layer(era_df,             "All incidents",    "#555555", show=True ).add_to(side)
+        dot_layer(homicides(era_df),  "Fatal shootings",  "darkred", show=False).add_to(side)
+        dot_layer(injury_only(era_df),"Injury shootings", "orange",  show=False).add_to(side)
+
+    add_incident_layers(m.m1, e1)
+    add_incident_layers(m.m2, e2)
+
+    # ── Boundary layers ────────────────────────────────────────────────────────
+    def add_boundary_layers(side):
+        folium.GeoJson(
+            neighborhoods_gdf.to_json(),
+            name="All neighborhoods",
+            show=False,
+            style_function=_nbd_style("#6b7280"),
+            tooltip=folium.GeoJsonTooltip(
+                fields=["NeighborhoodName"], aliases=["Neighborhood:"]
+            ),
+        ).add_to(side)
+
+        folium.GeoJson(
+            focus_gdf.to_json(),
+            name="Focus neighborhoods",
+            show=False,
+            style_function=_nbd_style("#d6604d", weight=2.5, fill_opacity=0.10),
+            tooltip=folium.GeoJsonTooltip(
+                fields=["NeighborhoodName"], aliases=["Neighborhood:"]
+            ),
+        ).add_to(side)
+
+        folium.GeoJson(
+            kidz_zones_gdf.to_json(),
+            name="Kidz Zone neighborhoods",
+            show=False,
+            style_function=_nbd_style("#2ca25f", weight=2.5, fill_opacity=0.12),
+            tooltip=folium.GeoJsonTooltip(
+                fields=["KZ_Name"], aliases=["Zone:"]
+            ),
+        ).add_to(side)
+
+    add_boundary_layers(m.m1)
+    add_boundary_layers(m.m2)
+
+    # ── Layer controls ─────────────────────────────────────────────────────────
+    folium.LayerControl(collapsed=False).add_to(m.m1)
+    folium.LayerControl(collapsed=False).add_to(m.m2)
+
+    # ── Titles (positioned to left and right halves of viewport) ──────────────
+    n1 = len(e1); k1 = int(e1["killed"].sum()); i1 = int(e1["injured"].sum())
+    n2 = len(e2); k2 = int(e2["killed"].sum()); i2 = int(e2["injured"].sum())
+
+    def _title_html(text, left_pct):
+        return f"""
+        <div style="position:fixed;top:10px;left:{left_pct}%;transform:translateX(-50%);
+             background:white;padding:8px 18px;border-radius:6px;border:1px solid #aaa;
+             z-index:1000;font-family:Arial,sans-serif;font-size:14px;text-align:center;
+             white-space:nowrap;pointer-events:none;">
+            {text}
+        </div>"""
+
+    m.m1.get_root().html.add_child(folium.Element(_title_html(
+        f"<b>Before: {ERA_1_LABEL}</b> &nbsp;·&nbsp; "
+        f"<small>{n1:,} incidents &nbsp;|&nbsp; {k1:,} killed &nbsp;|&nbsp; {i1:,} injured</small>",
+        25
+    )))
+    m.m2.get_root().html.add_child(folium.Element(_title_html(
+        f"<b>After: {ERA_2_LABEL}</b> &nbsp;·&nbsp; "
+        f"<small>{n2:,} incidents &nbsp;|&nbsp; {k2:,} killed &nbsp;|&nbsp; {i2:,} injured</small>",
+        75
+    )))
+
+    save_map(m, "sidebyside_advanced_peace.html")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # Main
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -554,6 +661,10 @@ def main():
     # ── Kidz Zones analysis ───────────────────────────────────────────────────
     print("\n── Kidz Zones 2024–2025 ─────────────────────────────────────────")
     make_kidz_zones_map(df, kidz_zones)
+
+    # ── Advancing Peace side-by-side ─────────────────────────────────────────
+    print("\n── Advancing Peace side-by-side ─────────────────────────────────")
+    make_advancing_peace_sidebyside(df, neighborhoods, kidz_zones)
 
     print(f"\nAll done. Files in: {config.OUTPUT_MAPS}")
 
