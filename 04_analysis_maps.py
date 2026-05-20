@@ -718,7 +718,8 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
     var name = this.value.trim();
     if (!BOUNDS[name]) return;
     var b = BOUNDS[name];
-    [MAP1, MAP2].forEach(function(map) {{
+    [MAP1_ID, MAP2_ID].forEach(function(id) {{
+      var map = window[id];
       if (map) map.fitBounds([[b[0], b[1]], [b[2], b[3]]]);
     }});
     showTable(name);
