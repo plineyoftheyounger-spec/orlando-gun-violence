@@ -867,18 +867,54 @@ COLOR_BEFORE = "#E69F00"   # warm yellow  — Wong colorblind-safe palette
 COLOR_AFTER  = "#0072B2"   # deep blue    — Wong colorblind-safe palette
 
 
-def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
+def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf, dark=False):
     """
     Single-map view of both eras.
-    Yellow = 2018-2022 (Before Advancing Peace)
-    Blue   = 2023-Present (After Advancing Peace)
-    Toggle era (checkboxes) and incident type (radio) independently.
-    Neighborhood/Kidz Zone search with highlight and stats table.
+    Yellow ★/✕ = 2018-2022 (Before)  |  Blue ★/✕ = 2023-Present (After)
+    dark=True → CartoDB dark_matter tile + dark UI panels.
+    Each version has a button linking to the other.
     """
+    if dark:
+        tile         = "CartoDB dark_matter"
+        ui_bg        = "#1e2130"
+        ui_border    = "#444"
+        ui_text      = "#ddd"
+        sep_col      = "#555"
+        inp_border   = "#555"
+        inp_bg       = "#252838"
+        inp_col      = "#ddd"
+        th_bg        = "#252838"
+        td_border    = "#3a3d50"
+        total_bg     = "#252838"
+        title_bg     = "#1e2130"
+        title_border = "#444"
+        title_col    = "#ddd"
+        other_file   = "unified_advanced_peace.html"
+        other_label  = "&#9728; Light"
+        out_file     = "unified_advanced_peace_dark.html"
+    else:
+        tile         = "CartoDB positron"
+        ui_bg        = "white"
+        ui_border    = "#bbb"
+        ui_text      = "#222"
+        sep_col      = "#ccc"
+        inp_border   = "#ccc"
+        inp_bg       = "white"
+        inp_col      = "#222"
+        th_bg        = "#f5f5f5"
+        td_border    = "#ddd"
+        total_bg     = "#f5f5f5"
+        title_bg     = "white"
+        title_border = "#aaa"
+        title_col    = "#222"
+        other_file   = "unified_advanced_peace_dark.html"
+        other_label  = "&#9790; Dark"
+        out_file     = "unified_advanced_peace.html"
+
     e1 = era1(df)
     e2 = era2(df)
 
-    # ── Pre-compute stats (shared with sidebyside logic) ───────────────────────
+    # ── Pre-compute stats ─────────────────────────────────────────────────────
     inc_gdf = gpd.GeoDataFrame(
         df, geometry=gpd.points_from_xy(df["lon"], df["lat"]), crs="EPSG:4326"
     )
@@ -892,8 +928,6 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
         b = grp[grp["year"].isin(ERA_1_YEARS)]
         a = grp[grp["year"].isin(ERA_2_YEARS)]
         nbd_stats[name] = {
-            "total": len(grp), "total_killed": int(grp["killed"].sum()),
-            "total_injured": int(grp["injured"].sum()),
             "before_count": len(b), "before_killed": int(b["killed"].sum()),
             "before_injured": int(b["injured"].sum()),
             "after_count": len(a), "after_killed": int(a["killed"].sum()),
@@ -916,8 +950,6 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
         b = grp[grp["year"].isin(ERA_1_YEARS)]
         a = grp[grp["year"].isin(ERA_2_YEARS)]
         kz_stats[name] = {
-            "total": len(grp), "total_killed": int(grp["killed"].sum()),
-            "total_injured": int(grp["injured"].sum()),
             "before_count": len(b), "before_killed": int(b["killed"].sum()),
             "before_injured": int(b["injured"].sum()),
             "after_count": len(a), "after_killed": int(a["killed"].sum()),
@@ -930,7 +962,11 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
         kz_bounds[row["KZ_Name"]] = [miny, minx, maxy, maxx]
 
     # ── Map ────────────────────────────────────────────────────────────────────
-    m = base_map()
+    m = folium.Map(
+        location=[config.ORLANDO_LAT, config.ORLANDO_LON],
+        zoom_start=config.DEFAULT_ZOOM,
+        tiles=tile,
+    )
 
     reg = {}
     for label, sub_df, color, shape in [
@@ -959,20 +995,20 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
     kz_lyr.add_to(m)
     reg["Kidz Zone neighborhoods"] = kz_lyr.get_name()
 
-    # ── Stats in title ─────────────────────────────────────────────────────────
+    # ── Title ─────────────────────────────────────────────────────────────────
     k1 = int(e1["killed"].sum()); i1 = int(e1["injured"].sum())
     k2 = int(e2["killed"].sum()); i2 = int(e2["injured"].sum())
     title_html = (
         f'<div style="position:fixed;top:10px;left:50%;transform:translateX(-50%);'
-        f'background:white;padding:6px 18px;border-radius:6px;border:1px solid #aaa;'
-        f'z-index:1000;font-family:Arial,sans-serif;font-size:13px;'
-        f'text-align:center;white-space:nowrap;">'
+        f'background:{title_bg};color:{title_col};padding:6px 18px;border-radius:6px;'
+        f'border:1px solid {title_border};z-index:1000;font-family:Arial,sans-serif;'
+        f'font-size:13px;text-align:center;white-space:nowrap;">'
         f'<span style="color:{COLOR_BEFORE};font-weight:bold;">★✕</span> '
         f'Before {ERA_1_LABEL}: {k1:,} killed · {i1:,} injured'
         f'&nbsp;&nbsp;&nbsp;'
         f'<span style="color:{COLOR_AFTER};font-weight:bold;">★✕</span> '
         f'After {ERA_2_LABEL}: {k2:,} killed · {i2:,} injured'
-        f'&nbsp;&nbsp; <small style="color:#666;">★ fatal &nbsp; ✕ injury</small>'
+        f'&nbsp;&nbsp; <small style="color:{sep_col};">★ fatal &nbsp; ✕ injury</small>'
         f'</div>'
     )
     m.get_root().html.add_child(folium.Element(title_html))
@@ -989,41 +1025,51 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
 <style>
   #um-control {{
     position:fixed; top:46px; left:50%; transform:translateX(-50%);
-    background:white; border:1px solid #bbb; border-radius:8px;
-    padding:8px 16px; z-index:1000; font-family:Arial,sans-serif; font-size:13px;
+    background:{ui_bg}; border:1px solid {ui_border}; color:{ui_text};
+    border-radius:8px; padding:8px 16px; z-index:1000;
+    font-family:Arial,sans-serif; font-size:13px;
     display:flex; align-items:center; gap:10px; flex-wrap:wrap;
     justify-content:center;
-    box-shadow:0 2px 8px rgba(0,0,0,.14);
+    box-shadow:0 2px 8px rgba(0,0,0,.25);
     max-width:calc(100vw - 40px); box-sizing:border-box;
   }}
-  #um-control label {{ cursor:pointer; display:flex; align-items:center; gap:4px; white-space:nowrap; }}
-  #um-control .sep {{ color:#ccc; font-size:16px; margin:0 2px; }}
+  #um-control label {{ cursor:pointer; display:flex; align-items:center; gap:4px; white-space:nowrap; color:{ui_text}; }}
+  #um-control b {{ color:{ui_text}; }}
+  #um-control .sep {{ color:{sep_col}; font-size:16px; margin:0 2px; }}
   #um-control input[type=search] {{
-    padding:4px 8px; border:1px solid #ccc; border-radius:4px;
+    padding:4px 8px; border:1px solid {inp_border}; border-radius:4px;
+    background:{inp_bg}; color:{inp_col};
     width:min(190px, calc(100vw - 80px)); font-size:13px;
   }}
+  #um-control input[type=search]::placeholder {{ color:{sep_col}; }}
   .sym-before {{ color:{COLOR_BEFORE}; font-weight:bold; }}
   .sym-after  {{ color:{COLOR_AFTER};  font-weight:bold; }}
+  .theme-btn {{
+    padding:3px 10px; background:{ui_border}; color:{ui_text};
+    border:1px solid {ui_border}; border-radius:4px; font-size:12px;
+    cursor:pointer; text-decoration:none; white-space:nowrap;
+  }}
   #um-table {{
     position:fixed; bottom:0; left:50%; transform:translateX(-50%);
-    background:white; border:1px solid #bbb; border-radius:8px 8px 0 0;
-    padding:12px 20px 14px; z-index:1000; font-family:Arial,sans-serif; font-size:13px;
-    box-shadow:0 -2px 10px rgba(0,0,0,.12); min-width:440px; display:none;
+    background:{ui_bg}; border:1px solid {ui_border}; color:{ui_text};
+    border-radius:8px 8px 0 0; padding:12px 20px 14px; z-index:1000;
+    font-family:Arial,sans-serif; font-size:13px;
+    box-shadow:0 -2px 10px rgba(0,0,0,.25); min-width:440px; display:none;
   }}
   #um-table table {{ border-collapse:collapse; width:100%; margin-top:8px; }}
-  #um-table th,#um-table td {{ border:1px solid #ddd; padding:5px 12px; }}
-  #um-table th {{ background:#f5f5f5; text-align:left; }}
+  #um-table th,#um-table td {{ border:1px solid {td_border}; padding:5px 12px; }}
+  #um-table th {{ background:{th_bg}; text-align:left; }}
   #um-table td:not(:first-child) {{ text-align:right; }}
-  #um-table .total-row {{ font-weight:bold; background:#f5f5f5; }}
-  #um-close {{ float:right; background:none; border:none; font-size:18px; cursor:pointer; line-height:1; }}
+  #um-table .total-row {{ font-weight:bold; background:{total_bg}; }}
+  #um-close {{ float:right; background:none; border:none; font-size:18px; cursor:pointer; line-height:1; color:{ui_text}; }}
 </style>
 
 <div id="um-control">
   <span><b>Era:</b></span>
   <label><input type="checkbox" id="cb-before" checked>
-    <span class="sym-before">&#9733;&#10005;</span> Before 2018–2022</label>
+    <span class="sym-before">&#9733;&#10005;</span> Before 2018&#x2013;2022</label>
   <label><input type="checkbox" id="cb-after" checked>
-    <span class="sym-after">&#9733;&#10005;</span> After 2023–Present</label>
+    <span class="sym-after">&#9733;&#10005;</span> After 2023&#x2013;Present</label>
   <span class="sep">|</span>
   <span><b>Type:</b></span>
   <label><input type="checkbox" id="cb-fatal" checked> Fatal &#9733;</label>
@@ -1035,13 +1081,14 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
   <span class="sep">|</span>
   <input type="search" id="um-search" list="um-nbd-list" placeholder="Search neighborhood or Kidz Zone...">
   <datalist id="um-nbd-list"></datalist>
+  <a href="{other_file}" class="theme-btn">{other_label}</a>
 </div>
 
 <div id="um-table">
   <button id="um-close">&#x00D7;</button>
   <span id="um-table-title" style="font-size:14px;font-weight:bold;"></span>
   <table>
-    <thead><tr><th>Period</th><th>Incidents</th><th>Killed</th><th>Injured</th></tr></thead>
+    <thead><tr><th>Period</th><th>Injured</th><th>Killed</th><th>Incidents</th></tr></thead>
     <tbody id="um-table-body"></tbody>
   </table>
 </div>
@@ -1056,10 +1103,8 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
   var KZ_BOUNDS  = {kz_bounds_j};
 
   var DEFAULT_OFF = ['All neighborhoods', 'Kidz Zone neighborhoods'];
-
   var highlightLayer = null;
 
-  // ── Layer control ─────────────────────────────────────────────────────────
   function setLayer(name, show) {{
     var map   = window[MAP_ID];
     var layer = window[LAYERS[name]];
@@ -1078,23 +1123,18 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
     }});
   }}
 
-  // ── Era checkboxes ────────────────────────────────────────────────────────
   document.getElementById('cb-before').addEventListener('change', function() {{
     STATE.before = this.checked; syncLayers();
   }});
   document.getElementById('cb-after').addEventListener('change', function() {{
     STATE.after = this.checked; syncLayers();
   }});
-
-  // ── Type checkboxes ───────────────────────────────────────────────────────
   document.getElementById('cb-fatal').addEventListener('change', function() {{
     STATE.fatal = this.checked; syncLayers();
   }});
   document.getElementById('cb-injury').addEventListener('change', function() {{
     STATE.injury = this.checked; syncLayers();
   }});
-
-  // ── Boundary checkboxes ───────────────────────────────────────────────────
   document.getElementById('cb-nbds').addEventListener('change', function() {{
     setLayer('All neighborhoods', this.checked);
   }});
@@ -1102,13 +1142,11 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
     setLayer('Kidz Zone neighborhoods', this.checked);
   }});
 
-  // ── Datalist ──────────────────────────────────────────────────────────────
   var dl = document.getElementById('um-nbd-list');
   Object.keys(NBD_BOUNDS).sort().concat(Object.keys(KZ_BOUNDS).sort()).forEach(function(n) {{
     var o = document.createElement('option'); o.value = n; dl.appendChild(o);
   }});
 
-  // ── Highlight ─────────────────────────────────────────────────────────────
   function getFeatureGeoJSON(layerVarName, propField, propValue) {{
     var lyr = window[layerVarName]; if (!lyr) return null;
     var found = null;
@@ -1134,14 +1172,20 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
     }}).addTo(map);
   }}
 
-  // ── Search ────────────────────────────────────────────────────────────────
+  function padBounds(b) {{
+    var dlat = (b[2] - b[0]) * 0.05;
+    var dlon = (b[3] - b[1]) * 0.05;
+    var pad  = Math.min(dlat, dlon);
+    return [[b[0] - pad, b[1] - pad], [b[2] + pad, b[3] + pad]];
+  }}
+
   document.getElementById('um-search').addEventListener('change', function() {{
     var name = this.value.trim();
     var isKZ  = KZ_BOUNDS[name] !== undefined;
     var isNbd = NBD_BOUNDS[name] !== undefined;
     if (!isKZ && !isNbd) return;
     var b = isKZ ? KZ_BOUNDS[name] : NBD_BOUNDS[name];
-    var map = window[MAP_ID]; if (map) map.fitBounds([[b[0],b[1]],[b[2],b[3]]]);
+    var map = window[MAP_ID]; if (map) map.fitBounds(padBounds(b));
     if (isKZ) {{
       highlightArea(LAYERS['Kidz Zone neighborhoods'], 'KZ_Name', name);
       showTable(name, KZ_STATS[name], 'Kidz Zone');
@@ -1151,16 +1195,18 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
     }}
   }});
 
-  // ── Stats table ───────────────────────────────────────────────────────────
   function showTable(name, s, type) {{
     if (!s) return;
+    var tc = s.before_count   + s.after_count;
+    var tk = s.before_killed  + s.after_killed;
+    var ti = s.before_injured + s.after_injured;
     document.getElementById('um-table-title').textContent = name + ' (' + type + ')';
     document.getElementById('um-table-body').innerHTML = [
-      ['Before (2018–2022)',      s.before_count, s.before_killed, s.before_injured],
-      ['After (2023–Present)',    s.after_count,  s.after_killed,  s.after_injured],
-      ['All years (2014–present)',s.total,         s.total_killed,  s.total_injured]
+      ['Before (2018–2022)',   s.before_injured, s.before_killed, s.before_count],
+      ['After (2023–Present)', s.after_injured,  s.after_killed,  s.after_count],
+      ['Total (2018–Present)', ti,               tk,              tc]
     ].map(function(r, i) {{
-      var cls = i===2 ? ' class="total-row"' : '';
+      var cls = i === 2 ? ' class="total-row"' : '';
       return '<tr'+cls+'><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';
     }}).join('');
     document.getElementById('um-table').style.display = 'block';
@@ -1172,7 +1218,6 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
     clearHighlight();
   }});
 
-  // ── Init: hide default-off layers after maps load ─────────────────────────
   window.addEventListener('load', function() {{
     DEFAULT_OFF.forEach(function(n) {{ setLayer(n, false); }});
   }});
@@ -1180,7 +1225,7 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
 </script>
 """
     m.get_root().html.add_child(folium.Element(html))
-    save_map(m, "unified_advanced_peace.html")
+    save_map(m, out_file)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1244,9 +1289,10 @@ def main():
     print("\n── Advancing Peace side-by-side ─────────────────────────────────")
     make_advancing_peace_sidebyside(df, neighborhoods, kidz_zones)
 
-    # ── Advancing Peace unified single map ────────────────────────────────────
+    # ── Advancing Peace unified maps (light + dark) ───────────────────────────
     print("\n── Advancing Peace unified map ──────────────────────────────────")
-    make_unified_map(df, neighborhoods, kidz_zones)
+    make_unified_map(df, neighborhoods, kidz_zones, dark=False)
+    make_unified_map(df, neighborhoods, kidz_zones, dark=True)
 
     print(f"\nAll done. Files in: {config.OUTPUT_MAPS}")
 
