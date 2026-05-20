@@ -164,6 +164,31 @@ def dot_layer(df, name, color, show=True):
     return group
 
 
+def shaped_layer(df, name, color, shape, show=True):
+    """Marker layer using a Unicode glyph (★ fatal, ✕ injury) with white outline."""
+    group = folium.FeatureGroup(name=name, show=show)
+    for _, row in df.iterrows():
+        popup = (
+            f"<b>{row['date'].strftime('%b %d, %Y')}</b><br>"
+            f"{row.get('address', '')}<br>"
+            f"Killed: {row['killed']} &nbsp;|&nbsp; Injured: {row['injured']}"
+        )
+        folium.Marker(
+            location=[row["lat"], row["lon"]],
+            icon=folium.DivIcon(
+                html=(
+                    f'<span style="font-size:15px;font-weight:bold;color:{color};'
+                    f'text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,'
+                    f'-1px 1px 0 #fff,1px 1px 0 #fff;">{shape}</span>'
+                ),
+                icon_size=(15, 15),
+                icon_anchor=(7, 8),
+            ),
+            popup=folium.Popup(popup, max_width=280),
+        ).add_to(group)
+    return group
+
+
 def smooth_heat_layer(df, name, show=True):
     if df.empty:
         return folium.FeatureGroup(name=name, show=show)
@@ -908,15 +933,13 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
     m = base_map()
 
     reg = {}
-    for label, sub_df, color in [
-        ("Before — All incidents",    e1,              COLOR_BEFORE),
-        ("Before — Fatal shootings",  homicides(e1),   COLOR_BEFORE),
-        ("Before — Injury shootings", injury_only(e1), COLOR_BEFORE),
-        ("After — All incidents",     e2,              COLOR_AFTER),
-        ("After — Fatal shootings",   homicides(e2),   COLOR_AFTER),
-        ("After — Injury shootings",  injury_only(e2), COLOR_AFTER),
+    for label, sub_df, color, shape in [
+        ("Before — Fatal shootings",  homicides(e1),   COLOR_BEFORE, "★"),
+        ("Before — Injury shootings", injury_only(e1), COLOR_BEFORE, "✕"),
+        ("After — Fatal shootings",   homicides(e2),   COLOR_AFTER,  "★"),
+        ("After — Injury shootings",  injury_only(e2), COLOR_AFTER,  "✕"),
     ]:
-        lyr = dot_layer(sub_df, label, color, show=True)
+        lyr = shaped_layer(sub_df, label, color, shape, show=True)
         lyr.add_to(m)
         reg[label] = lyr.get_name()
 
@@ -937,15 +960,22 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
     reg["Kidz Zone neighborhoods"] = kz_lyr.get_name()
 
     # ── Stats in title ─────────────────────────────────────────────────────────
-    n1 = len(e1); k1 = int(e1["killed"].sum()); i1 = int(e1["injured"].sum())
-    n2 = len(e2); k2 = int(e2["killed"].sum()); i2 = int(e2["injured"].sum())
-    add_title(m,
-        f"<span style='color:{COLOR_BEFORE};font-weight:bold;'>&#11044;</span> "
-        f"Before {ERA_1_LABEL}: {n1:,} inc · {k1:,} killed · {i1:,} inj"
-        f"&nbsp;&nbsp;&nbsp;"
-        f"<span style='color:{COLOR_AFTER};font-weight:bold;'>&#11044;</span> "
-        f"After {ERA_2_LABEL}: {n2:,} inc · {k2:,} killed · {i2:,} inj"
+    k1 = int(e1["killed"].sum()); i1 = int(e1["injured"].sum())
+    k2 = int(e2["killed"].sum()); i2 = int(e2["injured"].sum())
+    title_html = (
+        f'<div style="position:fixed;top:10px;left:50%;transform:translateX(-50%);'
+        f'background:white;padding:6px 18px;border-radius:6px;border:1px solid #aaa;'
+        f'z-index:1000;font-family:Arial,sans-serif;font-size:13px;'
+        f'text-align:center;white-space:nowrap;">'
+        f'<span style="color:{COLOR_BEFORE};font-weight:bold;">★✕</span> '
+        f'Before {ERA_1_LABEL}: {k1:,} killed · {i1:,} injured'
+        f'&nbsp;&nbsp;&nbsp;'
+        f'<span style="color:{COLOR_AFTER};font-weight:bold;">★✕</span> '
+        f'After {ERA_2_LABEL}: {k2:,} killed · {i2:,} injured'
+        f'&nbsp;&nbsp; <small style="color:#666;">★ fatal &nbsp; ✕ injury</small>'
+        f'</div>'
     )
+    m.get_root().html.add_child(folium.Element(title_html))
 
     # ── Control bar + search ───────────────────────────────────────────────────
     map_id      = m.get_name()
@@ -970,8 +1000,8 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
   #um-control input[type=search] {{
     padding:4px 8px; border:1px solid #ccc; border-radius:4px; width:190px; font-size:13px;
   }}
-  .dot-before {{ color:{COLOR_BEFORE}; font-size:16px; line-height:1; }}
-  .dot-after  {{ color:{COLOR_AFTER};  font-size:16px; line-height:1; }}
+  .sym-before {{ color:{COLOR_BEFORE}; font-weight:bold; }}
+  .sym-after  {{ color:{COLOR_AFTER};  font-weight:bold; }}
   #um-table {{
     position:fixed; bottom:0; left:50%; transform:translateX(-50%);
     background:white; border:1px solid #bbb; border-radius:8px 8px 0 0;
@@ -989,14 +1019,13 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
 <div id="um-control">
   <span><b>Era:</b></span>
   <label><input type="checkbox" id="cb-before" checked>
-    <span class="dot-before">&#11044;</span> Before 2018–2022</label>
+    <span class="sym-before">&#9733;&#10005;</span> Before 2018–2022</label>
   <label><input type="checkbox" id="cb-after" checked>
-    <span class="dot-after">&#11044;</span> After 2023–Present</label>
+    <span class="sym-after">&#9733;&#10005;</span> After 2023–Present</label>
   <span class="sep">|</span>
   <span><b>Type:</b></span>
-  <label><input type="radio" name="inc-type" value="all" checked> All incidents</label>
-  <label><input type="radio" name="inc-type" value="fatal"> Fatal shootings</label>
-  <label><input type="radio" name="inc-type" value="injury"> Injury shootings</label>
+  <label><input type="checkbox" id="cb-fatal" checked> Fatal &#9733;</label>
+  <label><input type="checkbox" id="cb-injury" checked> Injury &#10005;</label>
   <span class="sep">|</span>
   <span><b>Boundaries:</b></span>
   <label><input type="checkbox" id="cb-nbds"> All neighborhoods</label>
@@ -1024,11 +1053,7 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
   var KZ_STATS   = {kz_stats_j};
   var KZ_BOUNDS  = {kz_bounds_j};
 
-  var DEFAULT_OFF = [
-    'Before — Fatal shootings','Before — Injury shootings',
-    'After — Fatal shootings','After — Injury shootings',
-    'All neighborhoods','Kidz Zone neighborhoods'
-  ];
+  var DEFAULT_OFF = ['All neighborhoods', 'Kidz Zone neighborhoods'];
 
   var highlightLayer = null;
 
@@ -1041,18 +1066,13 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
     else if (!show && map.hasLayer(layer)) map.removeLayer(layer);
   }}
 
-  var STATE = {{ before: true, after: true, type: 'all' }};
-
-  var TYPE_SUFFIX = {{ all: 'All incidents', fatal: 'Fatal shootings', injury: 'Injury shootings' }};
+  var STATE = {{ before: true, after: true, fatal: true, injury: true }};
 
   function syncLayers() {{
-    ['Before','After'].forEach(function(era) {{
-      var on = era === 'Before' ? STATE.before : STATE.after;
-      ['All incidents','Fatal shootings','Injury shootings'].forEach(function(t) {{
-        var name = era + ' — ' + t;
-        var typeMatch = (t === TYPE_SUFFIX[STATE.type]);
-        setLayer(name, on && typeMatch);
-      }});
+    ['Before', 'After'].forEach(function(era) {{
+      var eraOn = era === 'Before' ? STATE.before : STATE.after;
+      setLayer(era + ' — Fatal shootings',  eraOn && STATE.fatal);
+      setLayer(era + ' — Injury shootings', eraOn && STATE.injury);
     }});
   }}
 
@@ -1064,11 +1084,12 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
     STATE.after = this.checked; syncLayers();
   }});
 
-  // ── Incident type radios ──────────────────────────────────────────────────
-  document.querySelectorAll('input[name="inc-type"]').forEach(function(r) {{
-    r.addEventListener('change', function() {{
-      STATE.type = this.value; syncLayers();
-    }});
+  // ── Type checkboxes ───────────────────────────────────────────────────────
+  document.getElementById('cb-fatal').addEventListener('change', function() {{
+    STATE.fatal = this.checked; syncLayers();
+  }});
+  document.getElementById('cb-injury').addEventListener('change', function() {{
+    STATE.injury = this.checked; syncLayers();
   }});
 
   // ── Boundary checkboxes ───────────────────────────────────────────────────
