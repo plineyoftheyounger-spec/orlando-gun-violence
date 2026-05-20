@@ -835,6 +835,332 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# Unified single map — both eras, yellow vs blue (colorblind-safe)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+COLOR_BEFORE = "#E69F00"   # warm yellow  — Wong colorblind-safe palette
+COLOR_AFTER  = "#0072B2"   # deep blue    — Wong colorblind-safe palette
+
+
+def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf):
+    """
+    Single-map view of both eras.
+    Yellow = 2018-2022 (Before Advancing Peace)
+    Blue   = 2023-Present (After Advancing Peace)
+    Toggle era (checkboxes) and incident type (radio) independently.
+    Neighborhood/Kidz Zone search with highlight and stats table.
+    """
+    e1 = era1(df)
+    e2 = era2(df)
+
+    # ── Pre-compute stats (shared with sidebyside logic) ───────────────────────
+    inc_gdf = gpd.GeoDataFrame(
+        df, geometry=gpd.points_from_xy(df["lon"], df["lat"]), crs="EPSG:4326"
+    )
+    joined = gpd.sjoin(
+        inc_gdf, neighborhoods_gdf[["NeighborhoodName", "geometry"]],
+        how="left", predicate="within"
+    ).drop(columns=["geometry", "index_right"], errors="ignore")
+
+    nbd_stats = {}
+    for name, grp in pd.DataFrame(joined).groupby("NeighborhoodName"):
+        b = grp[grp["year"].isin(ERA_1_YEARS)]
+        a = grp[grp["year"].isin(ERA_2_YEARS)]
+        nbd_stats[name] = {
+            "total": len(grp), "total_killed": int(grp["killed"].sum()),
+            "total_injured": int(grp["injured"].sum()),
+            "before_count": len(b), "before_killed": int(b["killed"].sum()),
+            "before_injured": int(b["injured"].sum()),
+            "after_count": len(a), "after_killed": int(a["killed"].sum()),
+            "after_injured": int(a["injured"].sum()),
+        }
+
+    nbd_bounds = {}
+    for _, row in neighborhoods_gdf.iterrows():
+        minx, miny, maxx, maxy = row.geometry.bounds
+        nbd_bounds[row["NeighborhoodName"]] = [miny, minx, maxy, maxx]
+
+    kz_dissolved = kidz_zones_gdf.dissolve(by="KZ_Name").reset_index()
+    kz_joined = gpd.sjoin(
+        inc_gdf, kz_dissolved[["KZ_Name", "geometry"]],
+        how="left", predicate="within"
+    ).drop(columns=["geometry", "index_right"], errors="ignore")
+
+    kz_stats = {}
+    for name, grp in pd.DataFrame(kz_joined).groupby("KZ_Name"):
+        b = grp[grp["year"].isin(ERA_1_YEARS)]
+        a = grp[grp["year"].isin(ERA_2_YEARS)]
+        kz_stats[name] = {
+            "total": len(grp), "total_killed": int(grp["killed"].sum()),
+            "total_injured": int(grp["injured"].sum()),
+            "before_count": len(b), "before_killed": int(b["killed"].sum()),
+            "before_injured": int(b["injured"].sum()),
+            "after_count": len(a), "after_killed": int(a["killed"].sum()),
+            "after_injured": int(a["injured"].sum()),
+        }
+
+    kz_bounds = {}
+    for _, row in kz_dissolved.iterrows():
+        minx, miny, maxx, maxy = row.geometry.bounds
+        kz_bounds[row["KZ_Name"]] = [miny, minx, maxy, maxx]
+
+    # ── Map ────────────────────────────────────────────────────────────────────
+    m = base_map()
+
+    reg = {}
+    for label, sub_df, color in [
+        ("Before — All incidents",    e1,              COLOR_BEFORE),
+        ("Before — Fatal shootings",  homicides(e1),   COLOR_BEFORE),
+        ("Before — Injury shootings", injury_only(e1), COLOR_BEFORE),
+        ("After — All incidents",     e2,              COLOR_AFTER),
+        ("After — Fatal shootings",   homicides(e2),   COLOR_AFTER),
+        ("After — Injury shootings",  injury_only(e2), COLOR_AFTER),
+    ]:
+        lyr = dot_layer(sub_df, label, color, show=True)
+        lyr.add_to(m)
+        reg[label] = lyr.get_name()
+
+    nbd_lyr = folium.GeoJson(
+        neighborhoods_gdf.to_json(), name="All neighborhoods", show=True,
+        style_function=_nbd_style("#6b7280"),
+        tooltip=folium.GeoJsonTooltip(fields=["NeighborhoodName"], aliases=["Neighborhood:"]),
+    )
+    nbd_lyr.add_to(m)
+    reg["All neighborhoods"] = nbd_lyr.get_name()
+
+    kz_lyr = folium.GeoJson(
+        kidz_zones_gdf.to_json(), name="Kidz Zone neighborhoods", show=True,
+        style_function=_nbd_style("#2ca25f", weight=2.5, fill_opacity=0.12),
+        tooltip=folium.GeoJsonTooltip(fields=["KZ_Name"], aliases=["Zone:"]),
+    )
+    kz_lyr.add_to(m)
+    reg["Kidz Zone neighborhoods"] = kz_lyr.get_name()
+
+    # ── Stats in title ─────────────────────────────────────────────────────────
+    n1 = len(e1); k1 = int(e1["killed"].sum()); i1 = int(e1["injured"].sum())
+    n2 = len(e2); k2 = int(e2["killed"].sum()); i2 = int(e2["injured"].sum())
+    add_title(m,
+        f"<span style='color:{COLOR_BEFORE};font-weight:bold;'>&#11044;</span> "
+        f"Before {ERA_1_LABEL}: {n1:,} inc · {k1:,} killed · {i1:,} inj"
+        f"&nbsp;&nbsp;&nbsp;"
+        f"<span style='color:{COLOR_AFTER};font-weight:bold;'>&#11044;</span> "
+        f"After {ERA_2_LABEL}: {n2:,} inc · {k2:,} killed · {i2:,} inj"
+    )
+
+    # ── Control bar + search ───────────────────────────────────────────────────
+    map_id      = m.get_name()
+    reg_js_str  = "{" + ", ".join(f'"{k}": "{v}"' for k, v in reg.items()) + "}"
+    stats_json  = json.dumps(nbd_stats, ensure_ascii=False)
+    bounds_json = json.dumps(nbd_bounds, ensure_ascii=False)
+    kz_stats_j  = json.dumps(kz_stats,  ensure_ascii=False)
+    kz_bounds_j = json.dumps(kz_bounds, ensure_ascii=False)
+
+    html = f"""
+<style>
+  .leaflet-control-zoom {{ display:none !important; }}
+  #um-control {{
+    position:fixed; top:46px; left:50%; transform:translateX(-50%);
+    background:white; border:1px solid #bbb; border-radius:8px;
+    padding:8px 16px; z-index:1000; font-family:Arial,sans-serif; font-size:13px;
+    display:flex; align-items:center; gap:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,.14); white-space:nowrap;
+  }}
+  #um-control label {{ cursor:pointer; display:flex; align-items:center; gap:4px; }}
+  #um-control .sep {{ color:#ccc; font-size:16px; margin:0 2px; }}
+  #um-control input[type=search] {{
+    padding:4px 8px; border:1px solid #ccc; border-radius:4px; width:190px; font-size:13px;
+  }}
+  .dot-before {{ color:{COLOR_BEFORE}; font-size:16px; line-height:1; }}
+  .dot-after  {{ color:{COLOR_AFTER};  font-size:16px; line-height:1; }}
+  #um-table {{
+    position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+    background:white; border:1px solid #bbb; border-radius:8px 8px 0 0;
+    padding:12px 20px 14px; z-index:1000; font-family:Arial,sans-serif; font-size:13px;
+    box-shadow:0 -2px 10px rgba(0,0,0,.12); min-width:440px; display:none;
+  }}
+  #um-table table {{ border-collapse:collapse; width:100%; margin-top:8px; }}
+  #um-table th,#um-table td {{ border:1px solid #ddd; padding:5px 12px; }}
+  #um-table th {{ background:#f5f5f5; text-align:left; }}
+  #um-table td:not(:first-child) {{ text-align:right; }}
+  #um-table .total-row {{ font-weight:bold; background:#f5f5f5; }}
+  #um-close {{ float:right; background:none; border:none; font-size:18px; cursor:pointer; line-height:1; }}
+</style>
+
+<div id="um-control">
+  <span><b>Era:</b></span>
+  <label><input type="checkbox" id="cb-before" checked>
+    <span class="dot-before">&#11044;</span> Before 2018–2022</label>
+  <label><input type="checkbox" id="cb-after" checked>
+    <span class="dot-after">&#11044;</span> After 2023–Present</label>
+  <span class="sep">|</span>
+  <span><b>Type:</b></span>
+  <label><input type="radio" name="inc-type" value="all" checked> All incidents</label>
+  <label><input type="radio" name="inc-type" value="fatal"> Fatal shootings</label>
+  <label><input type="radio" name="inc-type" value="injury"> Injury shootings</label>
+  <span class="sep">|</span>
+  <span><b>Boundaries:</b></span>
+  <label><input type="checkbox" id="cb-nbds"> All neighborhoods</label>
+  <label><input type="checkbox" id="cb-kz"> Kidz Zone neighborhoods</label>
+  <span class="sep">|</span>
+  <input type="search" id="um-search" list="um-nbd-list" placeholder="Search neighborhood or Kidz Zone...">
+  <datalist id="um-nbd-list"></datalist>
+</div>
+
+<div id="um-table">
+  <button id="um-close">&#x00D7;</button>
+  <span id="um-table-title" style="font-size:14px;font-weight:bold;"></span>
+  <table>
+    <thead><tr><th>Period</th><th>Incidents</th><th>Killed</th><th>Injured</th></tr></thead>
+    <tbody id="um-table-body"></tbody>
+  </table>
+</div>
+
+<script>
+(function() {{
+  var MAP_ID  = '{map_id}';
+  var LAYERS  = {reg_js_str};
+  var NBD_STATS  = {stats_json};
+  var NBD_BOUNDS = {bounds_json};
+  var KZ_STATS   = {kz_stats_j};
+  var KZ_BOUNDS  = {kz_bounds_j};
+
+  var DEFAULT_OFF = [
+    'Before — Fatal shootings','Before — Injury shootings',
+    'After — Fatal shootings','After — Injury shootings',
+    'All neighborhoods','Kidz Zone neighborhoods'
+  ];
+
+  var highlightLayer = null;
+
+  // ── Layer control ─────────────────────────────────────────────────────────
+  function setLayer(name, show) {{
+    var map   = window[MAP_ID];
+    var layer = window[LAYERS[name]];
+    if (!map || !layer) return;
+    if (show && !map.hasLayer(layer)) map.addLayer(layer);
+    else if (!show && map.hasLayer(layer)) map.removeLayer(layer);
+  }}
+
+  var STATE = {{ before: true, after: true, type: 'all' }};
+
+  var TYPE_SUFFIX = {{ all: 'All incidents', fatal: 'Fatal shootings', injury: 'Injury shootings' }};
+
+  function syncLayers() {{
+    ['Before','After'].forEach(function(era) {{
+      var on = era === 'Before' ? STATE.before : STATE.after;
+      ['All incidents','Fatal shootings','Injury shootings'].forEach(function(t) {{
+        var name = era + ' — ' + t;
+        var typeMatch = (t === TYPE_SUFFIX[STATE.type]);
+        setLayer(name, on && typeMatch);
+      }});
+    }});
+  }}
+
+  // ── Era checkboxes ────────────────────────────────────────────────────────
+  document.getElementById('cb-before').addEventListener('change', function() {{
+    STATE.before = this.checked; syncLayers();
+  }});
+  document.getElementById('cb-after').addEventListener('change', function() {{
+    STATE.after = this.checked; syncLayers();
+  }});
+
+  // ── Incident type radios ──────────────────────────────────────────────────
+  document.querySelectorAll('input[name="inc-type"]').forEach(function(r) {{
+    r.addEventListener('change', function() {{
+      STATE.type = this.value; syncLayers();
+    }});
+  }});
+
+  // ── Boundary checkboxes ───────────────────────────────────────────────────
+  document.getElementById('cb-nbds').addEventListener('change', function() {{
+    setLayer('All neighborhoods', this.checked);
+  }});
+  document.getElementById('cb-kz').addEventListener('change', function() {{
+    setLayer('Kidz Zone neighborhoods', this.checked);
+  }});
+
+  // ── Datalist ──────────────────────────────────────────────────────────────
+  var dl = document.getElementById('um-nbd-list');
+  Object.keys(NBD_BOUNDS).sort().concat(Object.keys(KZ_BOUNDS).sort()).forEach(function(n) {{
+    var o = document.createElement('option'); o.value = n; dl.appendChild(o);
+  }});
+
+  // ── Highlight ─────────────────────────────────────────────────────────────
+  function getFeatureGeoJSON(layerVarName, propField, propValue) {{
+    var lyr = window[layerVarName]; if (!lyr) return null;
+    var found = null;
+    lyr.eachLayer(function(sub) {{
+      var p = sub.feature && sub.feature.properties;
+      if (p && p[propField] === propValue) found = sub.toGeoJSON();
+    }});
+    return found;
+  }}
+
+  function clearHighlight() {{
+    var map = window[MAP_ID];
+    if (highlightLayer && map) {{ map.removeLayer(highlightLayer); highlightLayer = null; }}
+  }}
+
+  function highlightArea(layerVarName, propField, propValue) {{
+    clearHighlight();
+    var map = window[MAP_ID]; if (!map) return;
+    var feat = getFeatureGeoJSON(layerVarName, propField, propValue);
+    if (!feat) return;
+    highlightLayer = L.geoJSON(feat, {{
+      style: {{ color:'#e63946', weight:3, fillColor:'#e63946', fillOpacity:0.2 }}
+    }}).addTo(map);
+  }}
+
+  // ── Search ────────────────────────────────────────────────────────────────
+  document.getElementById('um-search').addEventListener('change', function() {{
+    var name = this.value.trim();
+    var isKZ  = KZ_BOUNDS[name] !== undefined;
+    var isNbd = NBD_BOUNDS[name] !== undefined;
+    if (!isKZ && !isNbd) return;
+    var b = isKZ ? KZ_BOUNDS[name] : NBD_BOUNDS[name];
+    var map = window[MAP_ID]; if (map) map.fitBounds([[b[0],b[1]],[b[2],b[3]]]);
+    if (isKZ) {{
+      highlightArea(LAYERS['Kidz Zone neighborhoods'], 'KZ_Name', name);
+      showTable(name, KZ_STATS[name], 'Kidz Zone');
+    }} else {{
+      highlightArea(LAYERS['All neighborhoods'], 'NeighborhoodName', name);
+      showTable(name, NBD_STATS[name], 'Neighborhood');
+    }}
+  }});
+
+  // ── Stats table ───────────────────────────────────────────────────────────
+  function showTable(name, s, type) {{
+    if (!s) return;
+    document.getElementById('um-table-title').textContent = name + ' (' + type + ')';
+    document.getElementById('um-table-body').innerHTML = [
+      ['Before (2018–2022)',      s.before_count, s.before_killed, s.before_injured],
+      ['After (2023–Present)',    s.after_count,  s.after_killed,  s.after_injured],
+      ['All years (2014–present)',s.total,         s.total_killed,  s.total_injured]
+    ].map(function(r, i) {{
+      var cls = i===2 ? ' class="total-row"' : '';
+      return '<tr'+cls+'><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';
+    }}).join('');
+    document.getElementById('um-table').style.display = 'block';
+  }}
+
+  document.getElementById('um-close').addEventListener('click', function() {{
+    document.getElementById('um-table').style.display = 'none';
+    document.getElementById('um-search').value = '';
+    clearHighlight();
+  }});
+
+  // ── Init: hide default-off layers after maps load ─────────────────────────
+  window.addEventListener('load', function() {{
+    DEFAULT_OFF.forEach(function(n) {{ setLayer(n, false); }});
+  }});
+}})();
+</script>
+"""
+    m.get_root().html.add_child(folium.Element(html))
+    save_map(m, "unified_advanced_peace.html")
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # Main
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -894,6 +1220,10 @@ def main():
     # ── Advancing Peace side-by-side ─────────────────────────────────────────
     print("\n── Advancing Peace side-by-side ─────────────────────────────────")
     make_advancing_peace_sidebyside(df, neighborhoods, kidz_zones)
+
+    # ── Advancing Peace unified single map ────────────────────────────────────
+    print("\n── Advancing Peace unified map ──────────────────────────────────")
+    make_unified_map(df, neighborhoods, kidz_zones)
 
     print(f"\nAll done. Files in: {config.OUTPUT_MAPS}")
 
