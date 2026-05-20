@@ -547,6 +547,36 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
         minx, miny, maxx, maxy = row.geometry.bounds
         nbd_bounds[row["NeighborhoodName"]] = [miny, minx, maxy, maxx]
 
+    # ── Pre-compute Kidz Zone stats + bounds ───────────────────────────────────
+    kz_dissolved = kidz_zones_gdf.dissolve(by="KZ_Name").reset_index()
+
+    kz_joined = gpd.sjoin(
+        inc_gdf,
+        kz_dissolved[["KZ_Name", "geometry"]],
+        how="left", predicate="within"
+    ).drop(columns=["geometry", "index_right"], errors="ignore")
+
+    kz_stats = {}
+    for name, grp in pd.DataFrame(kz_joined).groupby("KZ_Name"):
+        b = grp[grp["year"].isin(ERA_1_YEARS)]
+        a = grp[grp["year"].isin(ERA_2_YEARS)]
+        kz_stats[name] = {
+            "total":          len(grp),
+            "total_killed":   int(grp["killed"].sum()),
+            "total_injured":  int(grp["injured"].sum()),
+            "before_count":   len(b),
+            "before_killed":  int(b["killed"].sum()),
+            "before_injured": int(b["injured"].sum()),
+            "after_count":    len(a),
+            "after_killed":   int(a["killed"].sum()),
+            "after_injured":  int(a["injured"].sum()),
+        }
+
+    kz_bounds = {}
+    for _, row in kz_dissolved.iterrows():
+        minx, miny, maxx, maxy = row.geometry.bounds
+        kz_bounds[row["KZ_Name"]] = [miny, minx, maxy, maxx]
+
     # ── Build map ──────────────────────────────────────────────────────────────
     m = DualMap(
         location=[config.ORLANDO_LAT, config.ORLANDO_LON],
@@ -610,8 +640,10 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
     # ── Universal control bar + neighborhood search ────────────────────────────
     map1_id = m.m1.get_name()
     map2_id = m.m2.get_name()
-    stats_json  = json.dumps(nbd_stats,  ensure_ascii=False)
-    bounds_json = json.dumps(nbd_bounds, ensure_ascii=False)
+    stats_json    = json.dumps(nbd_stats,  ensure_ascii=False)
+    bounds_json   = json.dumps(nbd_bounds, ensure_ascii=False)
+    kz_stats_json = json.dumps(kz_stats,   ensure_ascii=False)
+    kz_bounds_json= json.dumps(kz_bounds,  ensure_ascii=False)
 
     # Store string names only — looked up lazily via window[] at call time
     def reg_js(reg):
@@ -672,34 +704,71 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
 
 <script>
 (function() {{
-  // IDs stored as strings — resolved via window[] lazily after map init
   var MAP1_ID = '{map1_id}';
   var MAP2_ID = '{map2_id}';
-  var LAYERS1 = {reg_js(reg1)};
-  var LAYERS2 = {reg_js(reg2)};
-  var STATS  = {stats_json};
-  var BOUNDS = {bounds_json};
+  var LAYERS1    = {reg_js(reg1)};
+  var LAYERS2    = {reg_js(reg2)};
+  var NBD_STATS  = {stats_json};
+  var NBD_BOUNDS = {bounds_json};
+  var KZ_STATS   = {kz_stats_json};
+  var KZ_BOUNDS  = {kz_bounds_json};
 
-  var DEFAULT_OFF = ['Fatal shootings', 'Injury shootings', 'All neighborhoods', 'Kidz Zone neighborhoods'];
+  var DEFAULT_OFF = ['Fatal shootings','Injury shootings','All neighborhoods','Kidz Zone neighborhoods'];
+  var highlightLayers = [null, null];
 
   function setLayer(name, show) {{
-    [[MAP1_ID, LAYERS1], [MAP2_ID, LAYERS2]].forEach(function(pair) {{
-      var map   = window[pair[0]];
-      var layer = window[pair[1][name]];
+    [[MAP1_ID, LAYERS1],[MAP2_ID, LAYERS2]].forEach(function(pair) {{
+      var map = window[pair[0]], layer = window[pair[1][name]];
       if (!map || !layer) return;
       if (show && !map.hasLayer(layer)) map.addLayer(layer);
       else if (!show && map.hasLayer(layer)) map.removeLayer(layer);
     }});
   }}
 
-  // Populate neighborhood datalist
-  Object.keys(BOUNDS).sort().forEach(function(name) {{
+  // ── Highlight ────────────────────────────────────────────────────────────────
+  function getFeatureGeoJSON(layerVarName, propField, propValue) {{
+    var lyr = window[layerVarName];
+    if (!lyr) return null;
+    var found = null;
+    lyr.eachLayer(function(sub) {{
+      var p = sub.feature && sub.feature.properties;
+      if (p && p[propField] === propValue) found = sub.toGeoJSON();
+    }});
+    return found;
+  }}
+
+  function clearHighlight() {{
+    highlightLayers.forEach(function(lyr, i) {{
+      var map = window[[MAP1_ID, MAP2_ID][i]];
+      if (lyr && map) map.removeLayer(lyr);
+    }});
+    highlightLayers = [null, null];
+  }}
+
+  function highlightArea(layerVarPair, propField, propValue) {{
+    clearHighlight();
+    layerVarPair.forEach(function(varName, i) {{
+      var map = window[[MAP1_ID, MAP2_ID][i]];
+      if (!map) return;
+      var feat = getFeatureGeoJSON(varName, propField, propValue);
+      if (!feat) return;
+      var hl = L.geoJSON(feat, {{
+        style: {{ color:'#e63946', weight:3, fillColor:'#e63946', fillOpacity:0.22 }}
+      }}).addTo(map);
+      highlightLayers[i] = hl;
+    }});
+  }}
+
+  // ── Datalist: neighborhoods + Kidz Zones ─────────────────────────────────────
+  var dl = document.getElementById('nbd-list');
+  var allNames = Object.keys(NBD_BOUNDS).sort().concat(Object.keys(KZ_BOUNDS).sort());
+  allNames.forEach(function(name) {{
     var opt = document.createElement('option');
     opt.value = name;
-    document.getElementById('nbd-list').appendChild(opt);
+    dl.appendChild(opt);
   }});
 
-  // Wire checkboxes
+  // ── Checkboxes ───────────────────────────────────────────────────────────────
   var cbMap = {{
     'cb-all':   'All incidents',
     'cb-fatal': 'Fatal shootings',
@@ -713,28 +782,37 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
     }});
   }});
 
-  // Neighborhood search → zoom both maps + show table
+  // ── Search ───────────────────────────────────────────────────────────────────
   document.getElementById('nbd-search').addEventListener('change', function() {{
     var name = this.value.trim();
-    if (!BOUNDS[name]) return;
-    var b = BOUNDS[name];
+    var isKZ  = KZ_BOUNDS[name] !== undefined;
+    var isNbd = NBD_BOUNDS[name] !== undefined;
+    if (!isKZ && !isNbd) return;
+
+    var b = isKZ ? KZ_BOUNDS[name] : NBD_BOUNDS[name];
     [MAP1_ID, MAP2_ID].forEach(function(id) {{
-      var map = window[id];
-      if (map) map.fitBounds([[b[0], b[1]], [b[2], b[3]]]);
+      var map = window[id]; if (map) map.fitBounds([[b[0],b[1]],[b[2],b[3]]]);
     }});
-    showTable(name);
+
+    if (isKZ) {{
+      highlightArea([LAYERS1['Kidz Zone neighborhoods'], LAYERS2['Kidz Zone neighborhoods']], 'KZ_Name', name);
+      showTable(name, KZ_STATS[name], 'Kidz Zone');
+    }} else {{
+      highlightArea([LAYERS1['All neighborhoods'], LAYERS2['All neighborhoods']], 'NeighborhoodName', name);
+      showTable(name, NBD_STATS[name], 'Neighborhood');
+    }}
   }});
 
-  function showTable(name) {{
-    var s = STATS[name];
+  // ── Stats table ──────────────────────────────────────────────────────────────
+  function showTable(name, s, type) {{
     if (!s) return;
-    document.getElementById('ap-table-title').textContent = name;
+    document.getElementById('ap-table-title').textContent = name + ' (' + type + ')';
     document.getElementById('ap-table-body').innerHTML = [
-      ['Before (2018–2022)', s.before_count, s.before_killed, s.before_injured],
-      ['After (2023–Present)', s.after_count, s.after_killed, s.after_injured],
-      ['All years (2014–present)', s.total, s.total_killed, s.total_injured]
+      ['Before (2018–2022)',      s.before_count, s.before_killed, s.before_injured],
+      ['After (2023–Present)',    s.after_count,  s.after_killed,  s.after_injured],
+      ['All years (2014–present)',s.total,         s.total_killed,  s.total_injured]
     ].map(function(r, i) {{
-      var cls = i === 2 ? ' class="total-row"' : '';
+      var cls = i===2 ? ' class="total-row"' : '';
       return '<tr'+cls+'><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';
     }}).join('');
     document.getElementById('ap-table').style.display = 'block';
@@ -743,9 +821,9 @@ def make_advancing_peace_sidebyside(df, neighborhoods_gdf, kidz_zones_gdf):
   document.getElementById('ap-close').addEventListener('click', function() {{
     document.getElementById('ap-table').style.display = 'none';
     document.getElementById('nbd-search').value = '';
+    clearHighlight();
   }});
 
-  // Hide default-off layers after all map init scripts have run
   window.addEventListener('load', function() {{
     DEFAULT_OFF.forEach(function(name) {{ setLayer(name, false); }});
   }});
