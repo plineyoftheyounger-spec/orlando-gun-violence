@@ -1,0 +1,39 @@
+name: Monthly GVA Data Update
+
+on:
+  schedule:
+    - cron: '0 8 1 * *'   # 1st of every month at 8 AM UTC
+  workflow_dispatch:        # allows manual trigger from GitHub UI
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Playwright + Chromium
+        run: python -m playwright install chromium --with-deps
+
+      - name: Run auto-update
+        run: python 06_auto_update.py
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/processed/orlando_incidents.csv output/update_log.txt
+          git diff --staged --quiet && echo "No new data." || git commit -m "data: monthly GVA update $(date +'%Y-%m-%d')"
+          git push

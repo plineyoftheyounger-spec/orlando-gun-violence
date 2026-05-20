@@ -1,0 +1,30 @@
+2026-05-18 21:50  ==================================================
+2026-05-18 21:50  Orlando GVA auto-update starting
+2026-05-18 21:50  Current data through 2026-03-24; fetching 2026-03-25 → 2026-05-18
+2026-05-18 21:50  GVA query: Florida/Orlando  03/25/2026 → 05/18/2026
+2026-05-18 21:50  Search returned: https://www.gunviolencearchive.org/query/65089c0f-7861-46f9-adac-007d63d827e2
+2026-05-18 21:50  Downloading: https://www.gunviolencearchive.org/export-finished/download?uuid=65089c0f-7861-46f9-adac-007d63d827e2&filename=public%3A//export-c61fbd15-f574-48bc-aa3c-82938ee1de6b.csv
+2026-05-18 21:50  Saved to: C:\Users\Thomas\AI\orlando_gun_violence\data\raw\gva_orlando_20260325_20260518.csv
+2026-05-18 21:50  Update failed: Missing expected columns: ['date', 'number_killed', 'number_injured']
+Found columns: ['Incident ID', 'Incident Date', 'State', 'City Or County', 'Address', 'Victims Killed', 'Victims Injured', 'Suspects Killed', 'Suspects Injured', 'Suspects Arrested', 'Operations']
+Check config.py and adjust COL_* names to match your export.
+Traceback (most recent call last):
+  File "C:\Users\Thomas\AI\orlando_gun_violence\06_auto_update.py", line 210, in <module>
+    main()
+  File "C:\Users\Thomas\AI\orlando_gun_violence\06_auto_update.py", line 191, in main
+    fresh = clean(raw_df)
+            ^^^^^^^^^^^^^
+  File "C:\Users\Thomas\AI\orlando_gun_violence\01_prepare_data.py", line 59, in clean
+    raise ValueError(
+ValueError: Missing expected columns: ['date', 'number_killed', 'number_injured']
+Found columns: ['Incident ID', 'Incident Date', 'State', 'City Or County', 'Address', 'Victims Killed', 'Victims Injured', 'Suspects Killed', 'Suspects Injured', 'Suspects Arrested', 'Operations']
+Check config.py and adjust COL_* names to match your export.
+2026-05-18 21:52  ==================================================
+2026-05-18 21:52  Orlando GVA auto-update starting
+2026-05-18 21:52  Current data through 2026-03-24; fetching 2026-03-25 to 2026-05-18
+2026-05-18 21:52  GVA query: Florida/Orlando  03/25/2026 to 05/18/2026
+2026-05-18 21:52  Search returned: https://www.gunviolencearchive.org/query/3a31f9df-dcb6-44f5-86f4-4bb694dc3eec
+2026-05-18 21:52  Downloading: https://www.gunviolencearchive.org/export-finished/download?uuid=3a31f9df-dcb6-44f5-86f4-4bb694dc3eec&filename=public%3A//export-5e846cd9-9917-4dee-b364-9d1b3756cd4f.csv
+2026-05-18 21:52  Saved to: C:\Users\Thomas\AI\orlando_gun_violence\data\raw\gva_orlando_20260325_20260518.csv
+2026-05-18 21:52  Added 12 new incidents | total 1,754 | now through 2026-05-17
+2026-05-18 21:52  Update complete.

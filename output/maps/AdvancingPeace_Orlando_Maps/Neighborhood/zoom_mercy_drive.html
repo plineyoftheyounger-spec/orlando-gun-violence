@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_cae1a90f3b28394adf1ee71852642a80 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+    <div style="position:fixed;top:10px;left:50%;transform:translateX(-50%);
+         background:white;padding:8px 18px;border-radius:6px;border:1px solid #aaa;
+         z-index:1000;font-family:Arial,sans-serif;font-size:14px;text-align:center;">
+        <b>Mercy Drive</b><br><small style='font-weight:normal;'>2018–2022: 24 incidents &nbsp;|&nbsp; 2023–Present: 8 incidents</small>
+    </div>
+    
+    <div style="position:fixed;bottom:30px;left:30px;background:white;
+         padding:10px 14px;border-radius:6px;border:1px solid #aaa;
+         z-index:1000;font-family:Arial,sans-serif;font-size:13px;">
+        <b>Incident Type</b><br><div><span style="color:red;font-size:18px;line-height:1.4;">●</span>&nbsp;Fatal (no mass)</div><div><span style="color:orange;font-size:18px;line-height:1.4;">●</span>&nbsp;Multiple injured</div><div><span style="color:cadetblue;font-size:18px;line-height:1.4;">●</span>&nbsp;Injury only</div><div><span style="color:darkred;font-size:18px;line-height:1.4;">●</span>&nbsp;Mass shooting</div>
+    </div>
+    
+            <div class="folium-map" id="map_cae1a90f3b28394adf1ee71852642a80" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_cae1a90f3b28394adf1ee71852642a80 = L.map(
+                "map_cae1a90f3b28394adf1ee71852642a80",
+                {
+                    center: [28.5670902629792, -81.43175166756424],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 14,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_55cdd49aee49af904c57361905a16b3f = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_55cdd49aee49af904c57361905a16b3f.addTo(map_cae1a90f3b28394adf1ee71852642a80);
+        
+    
+        function geo_json_c3c8cef17c10d6f811055fa49abc0a46_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#e31a1c", "fillColor": "#e31a1c", "fillOpacity": 0.05, "weight": 2.5};
+            }
+        }
+
+        function geo_json_c3c8cef17c10d6f811055fa49abc0a46_onEachFeature(feature, layer) {
+
+            layer.on({
+            });
+        };
+        var geo_json_c3c8cef17c10d6f811055fa49abc0a46 = L.geoJson(null, {
+                onEachFeature: geo_json_c3c8cef17c10d6f811055fa49abc0a46_onEachFeature,
+            
+                style: geo_json_c3c8cef17c10d6f811055fa49abc0a46_styler,
+            ...{
+}
+        });
+
+        function geo_json_c3c8cef17c10d6f811055fa49abc0a46_add (data) {
+            geo_json_c3c8cef17c10d6f811055fa49abc0a46
+                .addData(data);
+        }
+            geo_json_c3c8cef17c10d6f811055fa49abc0a46_add({"features": [{"geometry": {"coordinates": [[[-81.4264550640711, 28.5661909809706], [-81.426446264333, 28.5652839486692], [-81.4264286666468, 28.5634698827916], [-81.4264198676766, 28.5625628492185], [-81.4264023010304, 28.5607487473184], [-81.4263943115712, 28.5599242157728], [-81.427017301958, 28.5599205582933], [-81.4284514437222, 28.5599120688997], [-81.4284462222763, 28.5597470259005], [-81.4282968401966, 28.5597479484848], [-81.4263922136083, 28.5597591781987], [-81.4253229780357, 28.5597771531946], [-81.4252906716269, 28.5576752471821], [-81.4263598863407, 28.5576573637959], [-81.4263385028483, 28.556262680486], [-81.4264126850257, 28.5562620865584], [-81.4269704006182, 28.5562574451965], [-81.4298141954021, 28.5562341221472], [-81.4298266713833, 28.5562339924123], [-81.430057226614, 28.5562320891857], [-81.4302876983954, 28.5562302760655], [-81.4303593510948, 28.556229687999], [-81.4305409249075, 28.5562272164519], [-81.430646469433, 28.5562272426088], [-81.4314815349726, 28.5562225156008], [-81.4336606325501, 28.5562034788923], [-81.4352627997299, 28.5561905001161], [-81.4366333195847, 28.5561803230669], [-81.4366485261756, 28.5574344210293], [-81.4366768386316, 28.5597806306578], [-81.4381213456572, 28.5597720048652], [-81.4381670445762, 28.5633765436106], [-81.4382126635016, 28.5669810806705], [-81.4367647562356, 28.5669863804962], [-81.4368309374262, 28.5694153098297], [-81.4368532900545, 28.5702341270108], [-81.4363091755757, 28.5707739219222], [-81.4356952759121, 28.5713828868247], [-81.4353295029789, 28.571745674807], [-81.4352189147029, 28.5718555879823], [-81.4351330645487, 28.5719534189256], [-81.4350742092274, 28.5720343771855], [-81.4350279779476, 28.5721095200256], [-81.4349903350549, 28.5721820176548], [-81.4349600135907, 28.5722512425087], [-81.4349305098075, 28.5723346340559], [-81.4349082541406, 28.5724175512009], [-81.43489085528, 28.5725125449292], [-81.4348857232198, 28.5725563307983], [-81.4348837142835, 28.5725803419766], [-81.4348822865899, 28.5726022768307], [-81.434881353719, 28.5726215022003], [-81.4348807152134, 28.5726710485934], [-81.4349145102019, 28.5743691822556], [-81.4346035642546, 28.57437117196], [-81.4346094906635, 28.5746643602959], [-81.4346089910111, 28.5746862921687], [-81.434606634743, 28.5747081388523], [-81.4346025087453, 28.5747299009706], [-81.434595862176, 28.5747539278933], [-81.4345901934169, 28.5747696484267], [-81.4345811722124, 28.5747901638597], [-81.4345705456579, 28.5748100518987], [-81.434559990305, 28.5748268708783], [-81.4345500149138, 28.5748408005381], [-81.4345391933614, 28.5748542817409], [-81.4345282027789, 28.5748676732509], [-81.4345139428157, 28.5748856780236], [-81.4344914689263, 28.5749154412136], [-81.4344715160623, 28.5749433005289], [-81.4344493935498, 28.5749764914476], [-81.4344255218627, 28.5750151028557], [-81.4344045102773, 28.5750519897706], [-81.4343785775686, 28.5751019789533], [-81.4343596895924, 28.575142739992], [-81.4343424051857, 28.5751839470611], [-81.4343111542026, 28.5752733003322], [-81.4342917208984, 28.5753455589961], [-81.4342753715849, 28.575429539904], [-81.4342671243436, 28.5754951748387], [-81.4342631453881, 28.5755527644579], [-81.4342730283488, 28.5766656416157], [-81.4342105318647, 28.5767229664271], [-81.4342002831368, 28.5767527806763], [-81.4341866570427, 28.5767813415653], [-81.4341696521912, 28.5768085597666], [-81.4341495205989, 28.57683407354], [-81.4341265142832, 28.5768575211453], [-81.4340989225683, 28.5769143732933], [-81.434085800187, 28.5769423920637], [-81.4340692916316, 28.5769879287019], [-81.4340582702085, 28.5770347110493], [-81.4340529845072, 28.5770822871461], [-81.4340532656972, 28.5771301161341], [-81.4340591943638, 28.5771776572589], [-81.4340706840953, 28.5772242773593], [-81.4341320157356, 28.5774786640496], [-81.4341774738893, 28.5778714478516], [-81.4341828550824, 28.5779910057869], [-81.4319231655897, 28.5780002028915], [-81.4319188926069, 28.5778828069155], [-81.4318243432858, 28.5743868130292], [-81.4327759043541, 28.5743815248413], [-81.4334297536264, 28.574377813762], [-81.4338038526336, 28.5743758964729], [-81.433800392996, 28.5742519099829], [-81.4334262951669, 28.5742540077219], [-81.4334232661454, 28.5741938237343], [-81.4334135829068, 28.5740735575694], [-81.4333991802173, 28.5739537567384], [-81.4333800577304, 28.5738343328123], [-81.4333562159151, 28.5737156458181], [-81.4333277399947, 28.573597785714], [-81.4332945465377, 28.5734808429969], [-81.4332568049522, 28.5733649975887], [-81.4332361663825, 28.5733075777085], [-81.4332144311569, 28.5732504311228], [-81.4331425769061, 28.5730810888287], [-81.4331163802742, 28.5730254904295], [-81.4330890890458, 28.5729701671199], [-81.4330312233322, 28.5728609737884], [-81.432969151216, 28.5727536896505], [-81.4329027858208, 28.5726483140752], [-81.4328680887627, 28.5725963529707], [-81.4328335711017, 28.5725470080479], [-81.4319273667451, 28.5725471884282], [-81.4307767708151, 28.5725556290374], [-81.4307461078981, 28.5707200383374], [-81.4303992540289, 28.5707218615967], [-81.4303995707228, 28.5708798030865], [-81.4303415043409, 28.5709180187467], [-81.4302489914686, 28.5708930612063], [-81.4301284280033, 28.5708627857352], [-81.4300182127613, 28.5708373003341], [-81.429867944524, 28.5708058645102], [-81.4296674327417, 28.5707697547113], [-81.4294210152265, 28.5707311866522], [-81.4285802601524, 28.5707331225775], [-81.4285801017965, 28.5706731098298], [-81.4266490399084, 28.5703875208737], [-81.4266332945643, 28.5703719573075], [-81.426629112192, 28.5700666697204], [-81.4265987612044, 28.5700669455972], [-81.4265833594165, 28.5696765906273], [-81.4265731282909, 28.5695228444882], [-81.4265428681481, 28.5691066356146], [-81.4285542885627, 28.5690883862756], [-81.4285512700579, 28.5689051969508], [-81.4285235747385, 28.5672095677297], [-81.4295522681759, 28.5671965688004], [-81.4304878875568, 28.5671847605646], [-81.4304756410282, 28.5661435439542], [-81.4294880111362, 28.5661552459329], [-81.4295014660785, 28.5669771621469], [-81.429010725445, 28.5669833161665], [-81.4269770333279, 28.5670090420789], [-81.4269690696305, 28.5661849425954], [-81.4264550640711, 28.5661909809706]]], "type": "Polygon"}, "id": "85", "properties": {"Color": 16752895, "GlobalID": "0634842c-dadc-4ad1-b431-1e70508ddb50", "NeighborhoodID": 56, "NeighborhoodName": "Mercy Drive", "Object_ID": 86, "Shape__Area": 20483517.033203125, "Shape__Length": 29100.785723821016}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+            geo_json_c3c8cef17c10d6f811055fa49abc0a46.addTo(map_cae1a90f3b28394adf1ee71852642a80);
+        
+    
+            var feature_group_dd1e37663449969b30415e21464ae6f3 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_cbc8b27a446d9cb1bae2d919416d15a4 = L.circleMarker(
+                [28.5729, -81.4375],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_c4188e584346f8216197d953cae01146 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_7390d3369690f79fb3f88771db8fbd91 = $(`<div id="html_7390d3369690f79fb3f88771db8fbd91" style="width: 100.0%; height: 100.0%;"><b>Apr 24, 2018</b><br>Carousel Rd<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_c4188e584346f8216197d953cae01146.setContent(html_7390d3369690f79fb3f88771db8fbd91);
+            
+        
+
+        circle_marker_cbc8b27a446d9cb1bae2d919416d15a4.bindPopup(popup_c4188e584346f8216197d953cae01146)
+        ;
+
+        
+    
+    
+            var circle_marker_8f7ed3c47d5b210f3f4eea551fd8bb4b = L.circleMarker(
+                [28.578415472084213, -81.43799010890835],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_f00faa38dfab7a97546a47ecc1517435 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_9cbd59ffa82282691f14bc9ac176b697 = $(`<div id="html_9cbd59ffa82282691f14bc9ac176b697" style="width: 100.0%; height: 100.0%;"><b>Jun 30, 2018</b><br>4355 Silver Star Rd<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_f00faa38dfab7a97546a47ecc1517435.setContent(html_9cbd59ffa82282691f14bc9ac176b697);
+            
+        
+
+        circle_marker_8f7ed3c47d5b210f3f4eea551fd8bb4b.bindPopup(popup_f00faa38dfab7a97546a47ecc1517435)
+        ;
+
+        
+    
+    
+            var circle_marker_5931575c7bd164187f653c554a0ff42a = L.circleMarker(
+                [28.561358215586104, -81.43258745585334],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_d85ac89acc51c2f2ebc895f7f4116ccd = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_fa90a6faf09e57fe830281fd06007ab8 = $(`<div id="html_fa90a6faf09e57fe830281fd06007ab8" style="width: 100.0%; height: 100.0%;"><b>Jul 18, 2018</b><br>1488 Mercy Dr<br>Killed: 1 &nbsp;|&nbsp; Injured: 0</div>`)[0];
+                popup_d85ac89acc51c2f2ebc895f7f4116ccd.setContent(html_fa90a6faf09e57fe830281fd06007ab8);
+            
+        
+
+        circle_marker_5931575c7bd164187f653c554a0ff42a.bindPopup(popup_d85ac89acc51c2f2ebc895f7f4116ccd)
+        ;
+
+        
+    
+    
+            var circle_marker_ba07f877159be4daea6778c1ca6ac6b7 = L.circleMarker(
+                [28.56115912192929, -81.4328975556292],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_7e87bb7eddecd2bb7b1f1cec1808c04b = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_b95e5a0aa815fc2a6c87e412d46f1b0f = $(`<div id="html_b95e5a0aa815fc2a6c87e412d46f1b0f" style="width: 100.0%; height: 100.0%;"><b>Sep 18, 2018</b><br>1488 Mercy Drive<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_7e87bb7eddecd2bb7b1f1cec1808c04b.setContent(html_b95e5a0aa815fc2a6c87e412d46f1b0f);
+            
+        
+
+        circle_marker_ba07f877159be4daea6778c1ca6ac6b7.bindPopup(popup_7e87bb7eddecd2bb7b1f1cec1808c04b)
+        ;
+
+        
+    
+    
+            var circle_marker_658e31bac9d0fc09cddaaa2510bc7cb3 = L.circleMarker(
+                [28.5591, -81.4337],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_cc9d57295e64a751ce722d9ef610ee61 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_4c1b03fbdb1a1bbc54af8bdf56715d95 = $(`<div id="html_4c1b03fbdb1a1bbc54af8bdf56715d95" style="width: 100.0%; height: 100.0%;"><b>Dec 01, 2018</b><br>4414 Lake Lawne Ave<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_cc9d57295e64a751ce722d9ef610ee61.setContent(html_4c1b03fbdb1a1bbc54af8bdf56715d95);
+            
+        
+
+        circle_marker_658e31bac9d0fc09cddaaa2510bc7cb3.bindPopup(popup_cc9d57295e64a751ce722d9ef610ee61)
+        ;
+
+        
+    
+    
+            var circle_marker_c0ff51b1bd06a7426924abae793761d2 = L.circleMarker(
+                [28.5598, -81.4264],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_2c2c98cc7b4531369fc9046949558a06 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_10b3ed2d1903adc4c96a0c05c47184f7 = $(`<div id="html_10b3ed2d1903adc4c96a0c05c47184f7" style="width: 100.0%; height: 100.0%;"><b>Dec 25, 2018</b><br>3900 block of WD Judge Blvd<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_2c2c98cc7b4531369fc9046949558a06.setContent(html_10b3ed2d1903adc4c96a0c05c47184f7);
+            
+        
+
+        circle_marker_c0ff51b1bd06a7426924abae793761d2.bindPopup(popup_2c2c98cc7b4531369fc9046949558a06)
+        ;
+
+        
+    
+    
+            var circle_marker_abbac2fa3558444a4426b3c4f018cd2f = L.circleMarker(
+                [28.561441930550146, -81.43285087184657],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_d07f7a08f3e41f7133a76e1e8701f378 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_d4369967821a1d2cc032a52c6fa61865 = $(`<div id="html_d4369967821a1d2cc032a52c6fa61865" style="width: 100.0%; height: 100.0%;"><b>Jul 22, 2019</b><br>1488 Mercy Dr<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_d07f7a08f3e41f7133a76e1e8701f378.setContent(html_d4369967821a1d2cc032a52c6fa61865);
+            
+        
+
+        circle_marker_abbac2fa3558444a4426b3c4f018cd2f.bindPopup(popup_d07f7a08f3e41f7133a76e1e8701f378)
+        ;
+
+        
+    
+    
+            var circle_marker_fc9db85fde2e8f36335f8a2ef7d9a9dd = L.circleMarker(
+                [28.561227990375333, -81.43264906446436],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_8534d790544922f6aeda2f1098c8956b = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_97b9800f05f6788d5400549243ee22de = $(`<div id="html_97b9800f05f6788d5400549243ee22de" style="width: 100.0%; height: 100.0%;"><b>Oct 12, 2019</b><br>1488 Mercy Dr<br>Killed: 1 &nbsp;|&nbsp; Injured: 0</div>`)[0];
+                popup_8534d790544922f6aeda2f1098c8956b.setContent(html_97b9800f05f6788d5400549243ee22de);
+            
+        
+
+        circle_marker_fc9db85fde2e8f36335f8a2ef7d9a9dd.bindPopup(popup_8534d790544922f6aeda2f1098c8956b)
+        ;
+
+        
+    
+    
+            var circle_marker_f9642eddffc522034ae66660446eeb96 = L.circleMarker(
+                [28.557, -81.4299],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_824a096db5eae0380834ffe267808350 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_b0ed9703ed0b98512457163500272cd4 = $(`<div id="html_b0ed9703ed0b98512457163500272cd4" style="width: 100.0%; height: 100.0%;"><b>Jan 16, 2020</b><br>City Park Ave<br>Killed: 1 &nbsp;|&nbsp; Injured: 0</div>`)[0];
+                popup_824a096db5eae0380834ffe267808350.setContent(html_b0ed9703ed0b98512457163500272cd4);
+            
+        
+
+        circle_marker_f9642eddffc522034ae66660446eeb96.bindPopup(popup_824a096db5eae0380834ffe267808350)
+        ;
+
+        
+    
+    
+            var circle_marker_2b70dc261549af7d300be734c546581b = L.circleMarker(
+                [28.561279098165954, -81.43295755415765],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_b683b525a9bb71d01c4e2c77a6c4d0bb = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_150a9aabd26f2d52bf9bff664e6c1530 = $(`<div id="html_150a9aabd26f2d52bf9bff664e6c1530" style="width: 100.0%; height: 100.0%;"><b>Mar 15, 2020</b><br>1488 Mercy Dr<br>Killed: 0 &nbsp;|&nbsp; Injured: 2</div>`)[0];
+                popup_b683b525a9bb71d01c4e2c77a6c4d0bb.setContent(html_150a9aabd26f2d52bf9bff664e6c1530);
+            
+        
+
+        circle_marker_2b70dc261549af7d300be734c546581b.bindPopup(popup_b683b525a9bb71d01c4e2c77a6c4d0bb)
+        ;
+
+        
+    
+    
+            var circle_marker_fef9d57c466d3a1aad8c0d32c8e9b3f5 = L.circleMarker(
+                [28.561382473409328, -81.43271569223836],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_23f67a0d25f0d018638f9feeab691868 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_cc2b07c3fd97800fb91c59fecd2ea530 = $(`<div id="html_cc2b07c3fd97800fb91c59fecd2ea530" style="width: 100.0%; height: 100.0%;"><b>May 16, 2020</b><br>1488 Mercy Dr<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_23f67a0d25f0d018638f9feeab691868.setContent(html_cc2b07c3fd97800fb91c59fecd2ea530);
+            
+        
+
+        circle_marker_fef9d57c466d3a1aad8c0d32c8e9b3f5.bindPopup(popup_23f67a0d25f0d018638f9feeab691868)
+        ;
+
+        
+    
+    
+            var circle_marker_dc4e737216f5616a8762382facf7f8a8 = L.circleMarker(
+                [28.56121547208421, -81.43279010890835],
+                {"bubblingMouseEvents": true, "color": "darkred", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkred", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_1f7f77ab792ae4f214556f977f0bac7d = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_3966cb20274cdbbc91851989e9fdb906 = $(`<div id="html_3966cb20274cdbbc91851989e9fdb906" style="width: 100.0%; height: 100.0%;"><b>Jun 13, 2020</b><br>1488 Mercy Dr<br>Killed: 0 &nbsp;|&nbsp; Injured: 4 &nbsp;<b>⚠ Mass Shooting</b></div>`)[0];
+                popup_1f7f77ab792ae4f214556f977f0bac7d.setContent(html_3966cb20274cdbbc91851989e9fdb906);
+            
+        
+
+        circle_marker_dc4e737216f5616a8762382facf7f8a8.bindPopup(popup_1f7f77ab792ae4f214556f977f0bac7d)
+        ;
+
+        
+    
+    
+            var circle_marker_5102293d120881a13b869af2725341d9 = L.circleMarker(
+                [28.57854052941765, -81.43805898951025],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_c3408088bbdb652b3a7f58cec604b55c = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_792f31c2a6caec046833a8bab1a2f265 = $(`<div id="html_792f31c2a6caec046833a8bab1a2f265" style="width: 100.0%; height: 100.0%;"><b>Jul 17, 2020</b><br>4355 Silver Star Rd<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_c3408088bbdb652b3a7f58cec604b55c.setContent(html_792f31c2a6caec046833a8bab1a2f265);
+            
+        
+
+        circle_marker_5102293d120881a13b869af2725341d9.bindPopup(popup_c3408088bbdb652b3a7f58cec604b55c)
+        ;
+
+        
+    
+    
+            var circle_marker_68e90729af5b70726d38c1d0400b47c1 = L.circleMarker(
+                [28.561340529417656, -81.43285898951025],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_f52ba54c85099b6e7830dad99cdc1ecb = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_87250d06f6b50bc31310e46471f2cc3c = $(`<div id="html_87250d06f6b50bc31310e46471f2cc3c" style="width: 100.0%; height: 100.0%;"><b>Aug 15, 2020</b><br>1488 Mercy Dr<br>Killed: 0 &nbsp;|&nbsp; Injured: 3</div>`)[0];
+                popup_f52ba54c85099b6e7830dad99cdc1ecb.setContent(html_87250d06f6b50bc31310e46471f2cc3c);
+            
+        
+
+        circle_marker_68e90729af5b70726d38c1d0400b47c1.bindPopup(popup_f52ba54c85099b6e7830dad99cdc1ecb)
+        ;
+
+        
+    
+    
+            var circle_marker_a9668cb40adf199f7039baaddf24c3be = L.circleMarker(
+                [28.5785, -81.438],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_199ee216c0b14324d58beaddfc276a3b = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_7fe358caa1a8ad7fcbde61ba1c5250c3 = $(`<div id="html_7fe358caa1a8ad7fcbde61ba1c5250c3" style="width: 100.0%; height: 100.0%;"><b>Aug 17, 2020</b><br>4355 Silver Star Rd<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_199ee216c0b14324d58beaddfc276a3b.setContent(html_7fe358caa1a8ad7fcbde61ba1c5250c3);
+            
+        
+
+        circle_marker_a9668cb40adf199f7039baaddf24c3be.bindPopup(popup_199ee216c0b14324d58beaddfc276a3b)
+        ;
+
+        
+    
+    
+            var circle_marker_31efd5272fe210619b357507d7d08df3 = L.circleMarker(
+                [28.5613, -81.4328],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_886553b66bc971e706ba2abae017e13a = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_e697f0985ab2e17e7e9c3719d8da3077 = $(`<div id="html_e697f0985ab2e17e7e9c3719d8da3077" style="width: 100.0%; height: 100.0%;"><b>Aug 30, 2020</b><br>1488 Mercy Dr<br>Killed: 1 &nbsp;|&nbsp; Injured: 0</div>`)[0];
+                popup_886553b66bc971e706ba2abae017e13a.setContent(html_e697f0985ab2e17e7e9c3719d8da3077);
+            
+        
+
+        circle_marker_31efd5272fe210619b357507d7d08df3.bindPopup(popup_886553b66bc971e706ba2abae017e13a)
+        ;
+
+        
+    
+    
+            var circle_marker_97f56c2bf40a81c09f5b22c3f584ad94 = L.circleMarker(
+                [28.559840529417656, -81.43055898951025],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_2f054a0eb2bcd6c5237790c043ad8e5f = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_ee1b33055cbd2c34c3f8e196ffd811b4 = $(`<div id="html_ee1b33055cbd2c34c3f8e196ffd811b4" style="width: 100.0%; height: 100.0%;"><b>Feb 27, 2021</b><br>1400 block of Mercy Dr<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_2f054a0eb2bcd6c5237790c043ad8e5f.setContent(html_ee1b33055cbd2c34c3f8e196ffd811b4);
+            
+        
+
+        circle_marker_97f56c2bf40a81c09f5b22c3f584ad94.bindPopup(popup_2f054a0eb2bcd6c5237790c043ad8e5f)
+        ;
+
+        
+    
+    
+            var circle_marker_d62e15282a21cea7f63276be4528fbd6 = L.circleMarker(
+                [28.5616, -81.431],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_17ebe8a112542183fc35c5ac047dae8a = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_6929f0570170edc9947b5d02012b0c5e = $(`<div id="html_6929f0570170edc9947b5d02012b0c5e" style="width: 100.0%; height: 100.0%;"><b>Dec 04, 2021</b><br>1430 Mercy Dr<br>Killed: 1 &nbsp;|&nbsp; Injured: 0</div>`)[0];
+                popup_17ebe8a112542183fc35c5ac047dae8a.setContent(html_6929f0570170edc9947b5d02012b0c5e);
+            
+        
+
+        circle_marker_d62e15282a21cea7f63276be4528fbd6.bindPopup(popup_17ebe8a112542183fc35c5ac047dae8a)
+        ;
+
+        
+    
+    
+            var circle_marker_9f122ce329ad3aa2f63d90536a23d323 = L.circleMarker(
+                [28.5582, -81.4316],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_5c6d536506740cef0517083d7a847fd7 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_faa9dfee59009a7862b19748b5e299f5 = $(`<div id="html_faa9dfee59009a7862b19748b5e299f5" style="width: 100.0%; height: 100.0%;"><b>Jan 13, 2022</b><br>1300 block of Carlsbad Place<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_5c6d536506740cef0517083d7a847fd7.setContent(html_faa9dfee59009a7862b19748b5e299f5);
+            
+        
+
+        circle_marker_9f122ce329ad3aa2f63d90536a23d323.bindPopup(popup_5c6d536506740cef0517083d7a847fd7)
+        ;
+
+        
+    
+    
+            var circle_marker_b63c5f507b11cf0a9f6323d32349e0f0 = L.circleMarker(
+                [28.559015472084216, -81.42759010890835],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_a0fee49b7cfdacf0a0cef0eb771fd5b3 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_7e5d6db99ff5f65a1196d3fd107f2031 = $(`<div id="html_7e5d6db99ff5f65a1196d3fd107f2031" style="width: 100.0%; height: 100.0%;"><b>Mar 22, 2022</b><br>3944 WD Judge Dr<br>Killed: 0 &nbsp;|&nbsp; Injured: 2</div>`)[0];
+                popup_a0fee49b7cfdacf0a0cef0eb771fd5b3.setContent(html_7e5d6db99ff5f65a1196d3fd107f2031);
+            
+        
+
+        circle_marker_b63c5f507b11cf0a9f6323d32349e0f0.bindPopup(popup_a0fee49b7cfdacf0a0cef0eb771fd5b3)
+        ;
+
+        
+    
+    
+            var circle_marker_ee66b5c1e828a08d83aa3ca8cec6073a = L.circleMarker(
+                [28.5598, -81.4305],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_f216e96395cdb26c069084ab83394525 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_3b4952e76f14e784e103948c6333ea76 = $(`<div id="html_3b4952e76f14e784e103948c6333ea76" style="width: 100.0%; height: 100.0%;"><b>May 18, 2022</b><br>Wd Judge Dr and Mercy Dr<br>Killed: 1 &nbsp;|&nbsp; Injured: 0</div>`)[0];
+                popup_f216e96395cdb26c069084ab83394525.setContent(html_3b4952e76f14e784e103948c6333ea76);
+            
+        
+
+        circle_marker_ee66b5c1e828a08d83aa3ca8cec6073a.bindPopup(popup_f216e96395cdb26c069084ab83394525)
+        ;
+
+        
+    
+    
+            var circle_marker_995a4415358bc32d782ac9e62ec7edf7 = L.circleMarker(
+                [28.554940529417657, -81.43835898951025],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_20abb0cb23b8ac72aca0341d4c4da957 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_8d4363ae9647e3e5a99183c84d31d464 = $(`<div id="html_8d4363ae9647e3e5a99183c84d31d464" style="width: 100.0%; height: 100.0%;"><b>May 21, 2022</b><br>4603 W Colonial Dr<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_20abb0cb23b8ac72aca0341d4c4da957.setContent(html_8d4363ae9647e3e5a99183c84d31d464);
+            
+        
+
+        circle_marker_995a4415358bc32d782ac9e62ec7edf7.bindPopup(popup_20abb0cb23b8ac72aca0341d4c4da957)
+        ;
+
+        
+    
+    
+            var circle_marker_e0b26ee9af503ee305c6854c916228c7 = L.circleMarker(
+                [28.559140529417657, -81.42765898951025],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_13b5da1c18d6e8212d5bc4e8091124a4 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_adbb361c0ec43175b414a1157c11bd73 = $(`<div id="html_adbb361c0ec43175b414a1157c11bd73" style="width: 100.0%; height: 100.0%;"><b>May 30, 2022</b><br>3944 W D Judge Dr<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_13b5da1c18d6e8212d5bc4e8091124a4.setContent(html_adbb361c0ec43175b414a1157c11bd73);
+            
+        
+
+        circle_marker_e0b26ee9af503ee305c6854c916228c7.bindPopup(popup_13b5da1c18d6e8212d5bc4e8091124a4)
+        ;
+
+        
+    
+    
+            var circle_marker_257d2be7661a925bea1a7aa6b81c1324 = L.circleMarker(
+                [28.5616, -81.4324],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_dd1e37663449969b30415e21464ae6f3);
+        
+    
+        var popup_ef3922a412bb3664fe12fb894ef7b3f8 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_b0d93eb3fa28d5e72c37e2b3371b2ea8 = $(`<div id="html_b0d93eb3fa28d5e72c37e2b3371b2ea8" style="width: 100.0%; height: 100.0%;"><b>May 30, 2022</b><br>1488 Mercy Dr<br>Killed: 1 &nbsp;|&nbsp; Injured: 0</div>`)[0];
+                popup_ef3922a412bb3664fe12fb894ef7b3f8.setContent(html_b0d93eb3fa28d5e72c37e2b3371b2ea8);
+            
+        
+
+        circle_marker_257d2be7661a925bea1a7aa6b81c1324.bindPopup(popup_ef3922a412bb3664fe12fb894ef7b3f8)
+        ;
+
+        
+    
+    
+            feature_group_dd1e37663449969b30415e21464ae6f3.addTo(map_cae1a90f3b28394adf1ee71852642a80);
+        
+    
+            var feature_group_fa67191799b57c7da2848b489e38f369 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_27944f435c0ae5429984caf2d2f98300 = L.circleMarker(
+                [28.5689, -81.4306],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fa67191799b57c7da2848b489e38f369);
+        
+    
+        var popup_a1493002531a0554f51ea27955ec02a9 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_37eb4c7d7dfd708d33a6b0ddb2743d75 = $(`<div id="html_37eb4c7d7dfd708d33a6b0ddb2743d75" style="width: 100.0%; height: 100.0%;"><b>Jan 20, 2023</b><br>Mercy Dr<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_a1493002531a0554f51ea27955ec02a9.setContent(html_37eb4c7d7dfd708d33a6b0ddb2743d75);
+            
+        
+
+        circle_marker_27944f435c0ae5429984caf2d2f98300.bindPopup(popup_a1493002531a0554f51ea27955ec02a9)
+        ;
+
+        
+    
+    
+            var circle_marker_79b71fdf80540fabc1bdd3d8dd5e1fa8 = L.circleMarker(
+                [28.5591, -81.4276],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fa67191799b57c7da2848b489e38f369);
+        
+    
+        var popup_1f3210adeb7f751ebc9b8611645cade5 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_44102b89a2493f868611de228ce281af = $(`<div id="html_44102b89a2493f868611de228ce281af" style="width: 100.0%; height: 100.0%;"><b>May 04, 2023</b><br>3944 W D Judge Dr<br>Killed: 0 &nbsp;|&nbsp; Injured: 2</div>`)[0];
+                popup_1f3210adeb7f751ebc9b8611645cade5.setContent(html_44102b89a2493f868611de228ce281af);
+            
+        
+
+        circle_marker_79b71fdf80540fabc1bdd3d8dd5e1fa8.bindPopup(popup_1f3210adeb7f751ebc9b8611645cade5)
+        ;
+
+        
+    
+    
+            var circle_marker_357c27f381288b152415dc2f2df81f54 = L.circleMarker(
+                [28.5693, -81.4315],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fa67191799b57c7da2848b489e38f369);
+        
+    
+        var popup_367c418ac25bea0cc593196d67bf8798 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_7cb9b08c2448cf3a37efa9a4d8e473d1 = $(`<div id="html_7cb9b08c2448cf3a37efa9a4d8e473d1" style="width: 100.0%; height: 100.0%;"><b>Aug 18, 2023</b><br>2018 Mercy Dr<br>Killed: 1 &nbsp;|&nbsp; Injured: 0</div>`)[0];
+                popup_367c418ac25bea0cc593196d67bf8798.setContent(html_7cb9b08c2448cf3a37efa9a4d8e473d1);
+            
+        
+
+        circle_marker_357c27f381288b152415dc2f2df81f54.bindPopup(popup_367c418ac25bea0cc593196d67bf8798)
+        ;
+
+        
+    
+    
+            var circle_marker_72f9644e162a7026e220637061add3a9 = L.circleMarker(
+                [28.561815472084216, -81.43119010890835],
+                {"bubblingMouseEvents": true, "color": "darkred", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkred", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fa67191799b57c7da2848b489e38f369);
+        
+    
+        var popup_0b124ee9b0fb7decb4a5392d5e813871 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_e20f17828fa40b4c444a139a66821a37 = $(`<div id="html_e20f17828fa40b4c444a139a66821a37" style="width: 100.0%; height: 100.0%;"><b>Sep 22, 2023</b><br>1488 Mercy Dr<br>Killed: 1 &nbsp;|&nbsp; Injured: 3 &nbsp;<b>⚠ Mass Shooting</b></div>`)[0];
+                popup_0b124ee9b0fb7decb4a5392d5e813871.setContent(html_e20f17828fa40b4c444a139a66821a37);
+            
+        
+
+        circle_marker_72f9644e162a7026e220637061add3a9.bindPopup(popup_0b124ee9b0fb7decb4a5392d5e813871)
+        ;
+
+        
+    
+    
+            var circle_marker_9ec8be23fdb01757a739df6960e8abb8 = L.circleMarker(
+                [28.56194052941765, -81.43125898951025],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fa67191799b57c7da2848b489e38f369);
+        
+    
+        var popup_f9a49ad98d01f76bd6a2da37c4a7aba0 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_0d37b8a59a68d8bb13bb277e136e5c57 = $(`<div id="html_0d37b8a59a68d8bb13bb277e136e5c57" style="width: 100.0%; height: 100.0%;"><b>Sep 28, 2023</b><br>1488 Mercy Dr<br>Killed: 0 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_f9a49ad98d01f76bd6a2da37c4a7aba0.setContent(html_0d37b8a59a68d8bb13bb277e136e5c57);
+            
+        
+
+        circle_marker_9ec8be23fdb01757a739df6960e8abb8.bindPopup(popup_f9a49ad98d01f76bd6a2da37c4a7aba0)
+        ;
+
+        
+    
+    
+            var circle_marker_03bf8b0e19a0485b214d5f9b65b0e869 = L.circleMarker(
+                [28.5619, -81.4312],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fa67191799b57c7da2848b489e38f369);
+        
+    
+        var popup_d9c440e9e96e298e5419f8360a284fe0 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_416f1e3f278f8bf2a180ad8220895b64 = $(`<div id="html_416f1e3f278f8bf2a180ad8220895b64" style="width: 100.0%; height: 100.0%;"><b>Jan 30, 2024</b><br>1488 Mercy Dr<br>Killed: 1 &nbsp;|&nbsp; Injured: 1</div>`)[0];
+                popup_d9c440e9e96e298e5419f8360a284fe0.setContent(html_416f1e3f278f8bf2a180ad8220895b64);
+            
+        
+
+        circle_marker_03bf8b0e19a0485b214d5f9b65b0e869.bindPopup(popup_d9c440e9e96e298e5419f8360a284fe0)
+        ;
+
+        
+    
+    
+            var circle_marker_d0de8cf3402f8fbbb3f6cc38112218df = L.circleMarker(
+                [28.5549, -81.4383],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fa67191799b57c7da2848b489e38f369);
+        
+    
+        var popup_c42d70614d478e08efb22ebd5591ff2c = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_f36f9b05b80df3ecfe66e7d8dac8065b = $(`<div id="html_f36f9b05b80df3ecfe66e7d8dac8065b" style="width: 100.0%; height: 100.0%;"><b>Mar 02, 2024</b><br>4603 W Colonial Dr<br>Killed: 1 &nbsp;|&nbsp; Injured: 0</div>`)[0];
+                popup_c42d70614d478e08efb22ebd5591ff2c.setContent(html_f36f9b05b80df3ecfe66e7d8dac8065b);
+            
+        
+
+        circle_marker_d0de8cf3402f8fbbb3f6cc38112218df.bindPopup(popup_c42d70614d478e08efb22ebd5591ff2c)
+        ;
+
+        
+    
+    
+            var circle_marker_cdf23dbcf8efc246025023b6b7a2b2af = L.circleMarker(
+                [28.5593, -81.4342],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(feature_group_fa67191799b57c7da2848b489e38f369);
+        
+    
+        var popup_8b835321c27843664f71951f7dc8e343 = L.popup({
+  "maxWidth": 280,
+});
+
+        
+            
+                var html_f506eadfa63b85443bfd23bd156779d2 = $(`<div id="html_f506eadfa63b85443bfd23bd156779d2" style="width: 100.0%; height: 100.0%;"><b>Jul 14, 2024</b><br>Lake Lawne Ave and Fargo Pl<br>Killed: 1 &nbsp;|&nbsp; Injured: 0</div>`)[0];
+                popup_8b835321c27843664f71951f7dc8e343.setContent(html_f506eadfa63b85443bfd23bd156779d2);
+            
+        
+
+        circle_marker_cdf23dbcf8efc246025023b6b7a2b2af.bindPopup(popup_8b835321c27843664f71951f7dc8e343)
+        ;
+
+        
+    
+    
+            feature_group_fa67191799b57c7da2848b489e38f369.addTo(map_cae1a90f3b28394adf1ee71852642a80);
+        
+    
+            var layer_control_d3ed6ee980c5ee0933e5ba3d0397ea23_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_55cdd49aee49af904c57361905a16b3f,
+                },
+                overlays :  {
+                    "Mercy Drive boundary" : geo_json_c3c8cef17c10d6f811055fa49abc0a46,
+                    "2018\u20132022 (24)" : feature_group_dd1e37663449969b30415e21464ae6f3,
+                    "2023\u2013Present (8)" : feature_group_fa67191799b57c7da2848b489e38f369,
+                },
+            };
+            let layer_control_d3ed6ee980c5ee0933e5ba3d0397ea23 = L.control.layers(
+                layer_control_d3ed6ee980c5ee0933e5ba3d0397ea23_layers.base_layers,
+                layer_control_d3ed6ee980c5ee0933e5ba3d0397ea23_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": false,
+  "autoZIndex": true,
+}
+            ).addTo(map_cae1a90f3b28394adf1ee71852642a80);
+
+        
+</script>
+</html>

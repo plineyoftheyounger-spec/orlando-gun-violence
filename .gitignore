@@ -1,0 +1,13 @@
+# Raw downloads (keep processed only)
+data/raw/
+
+# Debug screenshots from failed runs
+output/debug/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS
+.DS_Store

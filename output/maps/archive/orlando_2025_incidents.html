@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_1494520840cb331fa9b2e8c92b9e2c40 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+</head>
+<body>
+    
+    
+    <div style="position:fixed;bottom:30px;left:30px;background:white;
+         padding:10px 14px;border-radius:6px;border:1px solid #aaa;
+         z-index:1000;font-family:Arial,sans-serif;font-size:13px;">
+        <b>Incident Type</b><br><div><span style="color:red;font-size:16px;">●</span> Fatal (no mass)</div><div><span style="color:orange;font-size:16px;">●</span> Multiple injured</div><div><span style="color:cadetblue;font-size:16px;">●</span> Injury only</div><div><span style="color:darkred;font-size:16px;">●</span> Mass shooting</div>
+    </div>
+    
+    <div style="position:fixed;top:10px;left:50%;transform:translateX(-50%);
+         background:white;padding:8px 16px;border-radius:6px;border:1px solid #aaa;
+         z-index:1000;font-family:Arial,sans-serif;font-size:14px;text-align:center;">
+        <b>Orlando Gun Violence 2025</b><br>
+        74 incidents &nbsp;|&nbsp; 40 killed &nbsp;|&nbsp; 49 injured
+    </div>
+    
+            <div class="folium-map" id="map_1494520840cb331fa9b2e8c92b9e2c40" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_1494520840cb331fa9b2e8c92b9e2c40 = L.map(
+                "map_1494520840cb331fa9b2e8c92b9e2c40",
+                {
+                    center: [28.5383, -81.3792],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 12,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_a6d07bfb3bfd536e3b733d872d7cadd5 = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_a6d07bfb3bfd536e3b733d872d7cadd5.addTo(map_1494520840cb331fa9b2e8c92b9e2c40);
+        
+    
+            var marker_cluster_1dd50d0fd54003b1e1b749b56694458f = L.markerClusterGroup(
+                {
+}
+            );
+        
+    
+            var circle_marker_36586a3673bf6b78ee5c7f6cbd6f2a94 = L.circleMarker(
+                [28.5462, -81.4129],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_c062feac0ddffd17e6d1994054a3feea = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_96485c2678e1654c5ae7526694bcf470 = $(`<div id="html_96485c2678e1654c5ae7526694bcf470" style="width: 100.0%; height: 100.0%;"><b>January 03, 2025</b><br>401 John Young Pkwy<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_c062feac0ddffd17e6d1994054a3feea.setContent(html_96485c2678e1654c5ae7526694bcf470);
+            
+        
+
+        circle_marker_36586a3673bf6b78ee5c7f6cbd6f2a94.bindPopup(popup_c062feac0ddffd17e6d1994054a3feea)
+        ;
+
+        
+    
+    
+            var circle_marker_f3fac68df6c4f66385430fe1e7b3c709 = L.circleMarker(
+                [28.5668, -81.2076],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_d1dffba56c4a2306429fcfcbf0806ede = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3bc474f1099896629d953dc4cae55a9c = $(`<div id="html_3bc474f1099896629d953dc4cae55a9c" style="width: 100.0%; height: 100.0%;"><b>January 06, 2025</b><br>Alafaya Trail and E Colonial Dr<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_d1dffba56c4a2306429fcfcbf0806ede.setContent(html_3bc474f1099896629d953dc4cae55a9c);
+            
+        
+
+        circle_marker_f3fac68df6c4f66385430fe1e7b3c709.bindPopup(popup_d1dffba56c4a2306429fcfcbf0806ede)
+        ;
+
+        
+    
+    
+            var circle_marker_9192905109eafe2ea0e198f44ba719ec = L.circleMarker(
+                [28.5567, -81.4509],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_b13d2cd2bb9bdc70237cb6e3010d765a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f40aa5c1efb443bbd5cddfa45f93941b = $(`<div id="html_f40aa5c1efb443bbd5cddfa45f93941b" style="width: 100.0%; height: 100.0%;"><b>January 08, 2025</b><br>5200 block of Montague Pl<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_b13d2cd2bb9bdc70237cb6e3010d765a.setContent(html_f40aa5c1efb443bbd5cddfa45f93941b);
+            
+        
+
+        circle_marker_9192905109eafe2ea0e198f44ba719ec.bindPopup(popup_b13d2cd2bb9bdc70237cb6e3010d765a)
+        ;
+
+        
+    
+    
+            var circle_marker_5a4577320d4e8f60a39282a38869410e = L.circleMarker(
+                [28.4667, -81.3774],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_32849a50961683a6be4f5aad16165d72 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8616b36470798343d5780651bf1bc4d8 = $(`<div id="html_8616b36470798343d5780651bf1bc4d8" style="width: 100.0%; height: 100.0%;"><b>February 08, 2025</b><br>100 block of W Castle St<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_32849a50961683a6be4f5aad16165d72.setContent(html_8616b36470798343d5780651bf1bc4d8);
+            
+        
+
+        circle_marker_5a4577320d4e8f60a39282a38869410e.bindPopup(popup_32849a50961683a6be4f5aad16165d72)
+        ;
+
+        
+    
+    
+            var circle_marker_b8981adbc4dc208074337798ce7bb4e2 = L.circleMarker(
+                [28.4467, -81.3952],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_a50f10967aff6d2bd5f6bbc7028e7b9c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_07889f8a662425d2becca6dc0aafd871 = $(`<div id="html_07889f8a662425d2becca6dc0aafd871" style="width: 100.0%; height: 100.0%;"><b>February 16, 2025</b><br>8001 S Orange Blossom Trl<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_a50f10967aff6d2bd5f6bbc7028e7b9c.setContent(html_07889f8a662425d2becca6dc0aafd871);
+            
+        
+
+        circle_marker_b8981adbc4dc208074337798ce7bb4e2.bindPopup(popup_a50f10967aff6d2bd5f6bbc7028e7b9c)
+        ;
+
+        
+    
+    
+            var circle_marker_0b69501e0574b5425ea5d0db8bb04c9b = L.circleMarker(
+                [28.3718, -81.3964],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_8f95193cba6bcc5d0086ea3a6a543d88 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ee1af59a94e7d397d2b2b624c75bc490 = $(`<div id="html_ee1af59a94e7d397d2b2b624c75bc490" style="width: 100.0%; height: 100.0%;"><b>February 19, 2025</b><br>1365 Epson Oaks Way<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_8f95193cba6bcc5d0086ea3a6a543d88.setContent(html_ee1af59a94e7d397d2b2b624c75bc490);
+            
+        
+
+        circle_marker_0b69501e0574b5425ea5d0db8bb04c9b.bindPopup(popup_8f95193cba6bcc5d0086ea3a6a543d88)
+        ;
+
+        
+    
+    
+            var circle_marker_20152a43c527650a8da512c545a9ccd9 = L.circleMarker(
+                [28.547, -81.4626],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_3b46d89bb8eff1e3ad4d004eaf95e165 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a0813e2d959ebab3773e224c5fe8fc29 = $(`<div id="html_a0813e2d959ebab3773e224c5fe8fc29" style="width: 100.0%; height: 100.0%;"><b>February 20, 2025</b><br>400 block of N John St<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_3b46d89bb8eff1e3ad4d004eaf95e165.setContent(html_a0813e2d959ebab3773e224c5fe8fc29);
+            
+        
+
+        circle_marker_20152a43c527650a8da512c545a9ccd9.bindPopup(popup_3b46d89bb8eff1e3ad4d004eaf95e165)
+        ;
+
+        
+    
+    
+            var circle_marker_431407fe6daf6d587ed7b68a57f56004 = L.circleMarker(
+                [28.621, -81.4734],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_baa8dd966739c3eead976aa2d00a8f7d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_88aaa531395b8dc9405123cafa0ef646 = $(`<div id="html_88aaa531395b8dc9405123cafa0ef646" style="width: 100.0%; height: 100.0%;"><b>February 21, 2025</b><br>6803 Merganser Dr<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_baa8dd966739c3eead976aa2d00a8f7d.setContent(html_88aaa531395b8dc9405123cafa0ef646);
+            
+        
+
+        circle_marker_431407fe6daf6d587ed7b68a57f56004.bindPopup(popup_baa8dd966739c3eead976aa2d00a8f7d)
+        ;
+
+        
+    
+    
+            var circle_marker_c44dde80853338ed0489d7e7f99ef517 = L.circleMarker(
+                [28.5264, -81.4012],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_ded6cb48a35491f773811ca46b49359d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cbfa3472b5bad72cb946bd66668aff5f = $(`<div id="html_cbfa3472b5bad72cb946bd66668aff5f" style="width: 100.0%; height: 100.0%;"><b>February 28, 2025</b><br>1600 block of Grand St<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 2</div>`)[0];
+                popup_ded6cb48a35491f773811ca46b49359d.setContent(html_cbfa3472b5bad72cb946bd66668aff5f);
+            
+        
+
+        circle_marker_c44dde80853338ed0489d7e7f99ef517.bindPopup(popup_ded6cb48a35491f773811ca46b49359d)
+        ;
+
+        
+    
+    
+            var circle_marker_596aad95bfdacb83ff9114000c835e7f = L.circleMarker(
+                [28.5542, -81.3749],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_f72b6a48922f5c8c925a4493e5fa9d98 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_61c79c610cf661e00bdcd5cb89612bfa = $(`<div id="html_61c79c610cf661e00bdcd5cb89612bfa" style="width: 100.0%; height: 100.0%;"><b>March 01, 2025</b><br>221 E Colonial Dr<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_f72b6a48922f5c8c925a4493e5fa9d98.setContent(html_61c79c610cf661e00bdcd5cb89612bfa);
+            
+        
+
+        circle_marker_596aad95bfdacb83ff9114000c835e7f.bindPopup(popup_f72b6a48922f5c8c925a4493e5fa9d98)
+        ;
+
+        
+    
+    
+            var circle_marker_27c9b49bff958442090a05a1b58ab4db = L.circleMarker(
+                [28.4706, -81.4248],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_d12a8ee21eea3071856695b7ac295dca = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7b2f147395233dce562c95e23c2243a8 = $(`<div id="html_7b2f147395233dce562c95e23c2243a8" style="width: 100.0%; height: 100.0%;"><b>March 09, 2025</b><br>5900 block of Casa Del Rey Cir<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_d12a8ee21eea3071856695b7ac295dca.setContent(html_7b2f147395233dce562c95e23c2243a8);
+            
+        
+
+        circle_marker_27c9b49bff958442090a05a1b58ab4db.bindPopup(popup_d12a8ee21eea3071856695b7ac295dca)
+        ;
+
+        
+    
+    
+            var circle_marker_95fa44ee845aa2e6955e675d72896384 = L.circleMarker(
+                [28.5247, -81.3097],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_cc425e1b1be73a583c60aa9416d6431c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ee89d250f7ffe80dd51ddae6d03e1e05 = $(`<div id="html_ee89d250f7ffe80dd51ddae6d03e1e05" style="width: 100.0%; height: 100.0%;"><b>March 15, 2025</b><br>1505 S Semoran Blvd<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_cc425e1b1be73a583c60aa9416d6431c.setContent(html_ee89d250f7ffe80dd51ddae6d03e1e05);
+            
+        
+
+        circle_marker_95fa44ee845aa2e6955e675d72896384.bindPopup(popup_cc425e1b1be73a583c60aa9416d6431c)
+        ;
+
+        
+    
+    
+            var circle_marker_55ef491fc3aee945523714934b07da50 = L.circleMarker(
+                [28.6051, -81.4242],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_cb725f0f8704ba194310a2b2a32d9a20 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2a5942c14ceb6a12a8f848d41d22ca53 = $(`<div id="html_2a5942c14ceb6a12a8f848d41d22ca53" style="width: 100.0%; height: 100.0%;"><b>March 16, 2025</b><br>5200 N Orange Blossom Trl<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_cb725f0f8704ba194310a2b2a32d9a20.setContent(html_2a5942c14ceb6a12a8f848d41d22ca53);
+            
+        
+
+        circle_marker_55ef491fc3aee945523714934b07da50.bindPopup(popup_cb725f0f8704ba194310a2b2a32d9a20)
+        ;
+
+        
+    
+    
+            var circle_marker_5b6de020c23f2f4ce6387667caf2b391 = L.circleMarker(
+                [28.5469, -81.4614],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_1b601109a16059a268fc0462c868c50e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_33d24238b6406907ab932be020d7a769 = $(`<div id="html_33d24238b6406907ab932be020d7a769" style="width: 100.0%; height: 100.0%;"><b>March 25, 2025</b><br>5200 block of W Livingston St<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_1b601109a16059a268fc0462c868c50e.setContent(html_33d24238b6406907ab932be020d7a769);
+            
+        
+
+        circle_marker_5b6de020c23f2f4ce6387667caf2b391.bindPopup(popup_1b601109a16059a268fc0462c868c50e)
+        ;
+
+        
+    
+    
+            var circle_marker_f59a7207d01d04577ab8d83ed3702f5d = L.circleMarker(
+                [28.5961, -81.448],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_49088e08602cfceb2a27500ac8f22b9a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9fc606b4cc5a02320ff1709ad5e827a9 = $(`<div id="html_9fc606b4cc5a02320ff1709ad5e827a9" style="width: 100.0%; height: 100.0%;"><b>March 30, 2025</b><br>4900 block of North Ln<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_49088e08602cfceb2a27500ac8f22b9a.setContent(html_9fc606b4cc5a02320ff1709ad5e827a9);
+            
+        
+
+        circle_marker_f59a7207d01d04577ab8d83ed3702f5d.bindPopup(popup_49088e08602cfceb2a27500ac8f22b9a)
+        ;
+
+        
+    
+    
+            var circle_marker_626dfec73e70357bce5bf5dabfc3a79e = L.circleMarker(
+                [28.5548, -81.4094],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_84c38549e9a7488dfc2e083493508dbe = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6c5c9a226be471e2f4c4da8d882561e5 = $(`<div id="html_6c5c9a226be471e2f4c4da8d882561e5" style="width: 100.0%; height: 100.0%;"><b>April 06, 2025</b><br>2155 W Colonial Dr<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_84c38549e9a7488dfc2e083493508dbe.setContent(html_6c5c9a226be471e2f4c4da8d882561e5);
+            
+        
+
+        circle_marker_626dfec73e70357bce5bf5dabfc3a79e.bindPopup(popup_84c38549e9a7488dfc2e083493508dbe)
+        ;
+
+        
+    
+    
+            var circle_marker_f3cd49dbf5c09fde90a0c9901cf34c10 = L.circleMarker(
+                [28.5417, -81.3788],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_e4de4077f82fa072b90dbaa3f8e91c27 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a94e651d35a313c503daafd9b9e70c2a = $(`<div id="html_a94e651d35a313c503daafd9b9e70c2a" style="width: 100.0%; height: 100.0%;"><b>April 20, 2025</b><br>13 S Orange Ave<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_e4de4077f82fa072b90dbaa3f8e91c27.setContent(html_a94e651d35a313c503daafd9b9e70c2a);
+            
+        
+
+        circle_marker_f3cd49dbf5c09fde90a0c9901cf34c10.bindPopup(popup_e4de4077f82fa072b90dbaa3f8e91c27)
+        ;
+
+        
+    
+    
+            var circle_marker_197f821a8a22efd3a625e700e1591035 = L.circleMarker(
+                [28.5101, -81.2566],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_13bc5d824cbfa1151bc086c2ad8953eb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1480eb5913e95e5e59b2a3c0216c33a8 = $(`<div id="html_1480eb5913e95e5e59b2a3c0216c33a8" style="width: 100.0%; height: 100.0%;"><b>April 20, 2025</b><br>Econlockhatchee Trail and Curry Ford Rd<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_13bc5d824cbfa1151bc086c2ad8953eb.setContent(html_1480eb5913e95e5e59b2a3c0216c33a8);
+            
+        
+
+        circle_marker_197f821a8a22efd3a625e700e1591035.bindPopup(popup_13bc5d824cbfa1151bc086c2ad8953eb)
+        ;
+
+        
+    
+    
+            var circle_marker_b5f4603e35d119b2e98943515bdb21e6 = L.circleMarker(
+                [28.6102, -81.2815],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_4616c4ae1793aa885aba40f1ecc3d396 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7f3bd575c329ceb3eb2f36a9597a6ea4 = $(`<div id="html_7f3bd575c329ceb3eb2f36a9597a6ea4" style="width: 100.0%; height: 100.0%;"><b>April 22, 2025</b><br>7950 Shoals Dr<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_4616c4ae1793aa885aba40f1ecc3d396.setContent(html_7f3bd575c329ceb3eb2f36a9597a6ea4);
+            
+        
+
+        circle_marker_b5f4603e35d119b2e98943515bdb21e6.bindPopup(popup_4616c4ae1793aa885aba40f1ecc3d396)
+        ;
+
+        
+    
+    
+            var circle_marker_12a8e45fda4d4a7c33b21cacf62b1a39 = L.circleMarker(
+                [28.5263, -81.3785],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_2dcb94e516be0fbb67b529d760a92113 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c0baeb600772fad5d9443be1cb7b9922 = $(`<div id="html_c0baeb600772fad5d9443be1cb7b9922" style="width: 100.0%; height: 100.0%;"><b>April 22, 2025</b><br>52 W Underwood St<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_2dcb94e516be0fbb67b529d760a92113.setContent(html_c0baeb600772fad5d9443be1cb7b9922);
+            
+        
+
+        circle_marker_12a8e45fda4d4a7c33b21cacf62b1a39.bindPopup(popup_2dcb94e516be0fbb67b529d760a92113)
+        ;
+
+        
+    
+    
+            var circle_marker_c0d4d97d47f6b9a8d95ed88054aa5b06 = L.circleMarker(
+                [28.4975, -81.4393],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_83eae5329fc44c0a175316f019fc5151 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e4abeaed1f3e21b0cb695aa4e93c84ff = $(`<div id="html_e4abeaed1f3e21b0cb695aa4e93c84ff" style="width: 100.0%; height: 100.0%;"><b>May 01, 2025</b><br>4620 Cason Cove Dr<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_83eae5329fc44c0a175316f019fc5151.setContent(html_e4abeaed1f3e21b0cb695aa4e93c84ff);
+            
+        
+
+        circle_marker_c0d4d97d47f6b9a8d95ed88054aa5b06.bindPopup(popup_83eae5329fc44c0a175316f019fc5151)
+        ;
+
+        
+    
+    
+            var circle_marker_6f48555b568eccbb3ff196d21e42e7e4 = L.circleMarker(
+                [28.4786, -81.4179],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_040618e687dd7e1ad8cd602d2fe24c3d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a1d53cae0b78646e2799593ec0aa6458 = $(`<div id="html_a1d53cae0b78646e2799593ec0aa6458" style="width: 100.0%; height: 100.0%;"><b>May 07, 2025</b><br>3900 block of Titelist Ct<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_040618e687dd7e1ad8cd602d2fe24c3d.setContent(html_a1d53cae0b78646e2799593ec0aa6458);
+            
+        
+
+        circle_marker_6f48555b568eccbb3ff196d21e42e7e4.bindPopup(popup_040618e687dd7e1ad8cd602d2fe24c3d)
+        ;
+
+        
+    
+    
+            var circle_marker_8a273a330822954b76111d2d519795ad = L.circleMarker(
+                [28.5777, -81.4642],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_c3f2a238c5df0f42b68365dc6386459f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_59b29400adc3c6f105afe6b8cc2de722 = $(`<div id="html_59b29400adc3c6f105afe6b8cc2de722" style="width: 100.0%; height: 100.0%;"><b>May 11, 2025</b><br>6000 block of Silver Star Rd<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_c3f2a238c5df0f42b68365dc6386459f.setContent(html_59b29400adc3c6f105afe6b8cc2de722);
+            
+        
+
+        circle_marker_8a273a330822954b76111d2d519795ad.bindPopup(popup_c3f2a238c5df0f42b68365dc6386459f)
+        ;
+
+        
+    
+    
+            var circle_marker_807ef4956be1477e0103f126c242bfe1 = L.circleMarker(
+                [28.59, -81.4576],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_ba68f057f9a36f9cc52cc2409aa11e5a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7ccbacaf23bdec22cced28403179b6f2 = $(`<div id="html_7ccbacaf23bdec22cced28403179b6f2" style="width: 100.0%; height: 100.0%;"><b>May 16, 2025</b><br>5614 Lejeune Dr<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_ba68f057f9a36f9cc52cc2409aa11e5a.setContent(html_7ccbacaf23bdec22cced28403179b6f2);
+            
+        
+
+        circle_marker_807ef4956be1477e0103f126c242bfe1.bindPopup(popup_ba68f057f9a36f9cc52cc2409aa11e5a)
+        ;
+
+        
+    
+    
+            var circle_marker_19df55439b820db2d8f7b809e5f10cbd = L.circleMarker(
+                [28.5474, -81.391],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_6316e183b264408182a4a09579533062 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5696f2d924ab34171971d46d1a872143 = $(`<div id="html_5696f2d924ab34171971d46d1a872143" style="width: 100.0%; height: 100.0%;"><b>May 18, 2025</b><br>746 W Livingston St<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_6316e183b264408182a4a09579533062.setContent(html_5696f2d924ab34171971d46d1a872143);
+            
+        
+
+        circle_marker_19df55439b820db2d8f7b809e5f10cbd.bindPopup(popup_6316e183b264408182a4a09579533062)
+        ;
+
+        
+    
+    
+            var circle_marker_337fe9fff61954aafb2e8cbd22b32e5b = L.circleMarker(
+                [28.5485, -81.3814],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_2be99e3359eda339815ac37fb7fc5a81 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a2dd4c41e7660b613bc12be3aea4e43a = $(`<div id="html_a2dd4c41e7660b613bc12be3aea4e43a" style="width: 100.0%; height: 100.0%;"><b>May 20, 2025</b><br>455 N Garland Ave<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_2be99e3359eda339815ac37fb7fc5a81.setContent(html_a2dd4c41e7660b613bc12be3aea4e43a);
+            
+        
+
+        circle_marker_337fe9fff61954aafb2e8cbd22b32e5b.bindPopup(popup_2be99e3359eda339815ac37fb7fc5a81)
+        ;
+
+        
+    
+    
+            var circle_marker_e32bb34c8460c3d08e71867e7ede5023 = L.circleMarker(
+                [28.5745, -81.4438],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_2bc088930bf2c9e78cbd75cd78007e0e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7680117f1359596b053ccbf001c61c76 = $(`<div id="html_7680117f1359596b053ccbf001c61c76" style="width: 100.0%; height: 100.0%;"><b>May 30, 2025</b><br>4800 block of Betty Sue Terrace<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_2bc088930bf2c9e78cbd75cd78007e0e.setContent(html_7680117f1359596b053ccbf001c61c76);
+            
+        
+
+        circle_marker_e32bb34c8460c3d08e71867e7ede5023.bindPopup(popup_2bc088930bf2c9e78cbd75cd78007e0e)
+        ;
+
+        
+    
+    
+            var circle_marker_194665f7664f8d570a764e08fff840c1 = L.circleMarker(
+                [28.5125, -81.4382],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_27a81aa648f166e42c011fbad6061f4d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_74c248d666b3ba5b09dfc93dbb67ac88 = $(`<div id="html_74c248d666b3ba5b09dfc93dbb67ac88" style="width: 100.0%; height: 100.0%;"><b>June 02, 2025</b><br>2800 block of Willie Mays Pkwy<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_27a81aa648f166e42c011fbad6061f4d.setContent(html_74c248d666b3ba5b09dfc93dbb67ac88);
+            
+        
+
+        circle_marker_194665f7664f8d570a764e08fff840c1.bindPopup(popup_27a81aa648f166e42c011fbad6061f4d)
+        ;
+
+        
+    
+    
+            var circle_marker_49c02c1f40f338076e4818ce5748af6f = L.circleMarker(
+                [28.4956, -81.4359],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_e6552fed09492b65f3a0a99b219bf59c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6d9dd2ef660904426be68085d12e57cf = $(`<div id="html_6d9dd2ef660904426be68085d12e57cf" style="width: 100.0%; height: 100.0%;"><b>June 03, 2025</b><br>4501 Conroy Rd<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_e6552fed09492b65f3a0a99b219bf59c.setContent(html_6d9dd2ef660904426be68085d12e57cf);
+            
+        
+
+        circle_marker_49c02c1f40f338076e4818ce5748af6f.bindPopup(popup_e6552fed09492b65f3a0a99b219bf59c)
+        ;
+
+        
+    
+    
+            var circle_marker_952d040489ba73d54e8d0eb0d8d46a97 = L.circleMarker(
+                [28.5447, -81.43],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_a1426d752df43e45a5c46f68220e8207 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_782923713f2e8faf6e1695a510826253 = $(`<div id="html_782923713f2e8faf6e1695a510826253" style="width: 100.0%; height: 100.0%;"><b>June 07, 2025</b><br>203 N Ortman Dr<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_a1426d752df43e45a5c46f68220e8207.setContent(html_782923713f2e8faf6e1695a510826253);
+            
+        
+
+        circle_marker_952d040489ba73d54e8d0eb0d8d46a97.bindPopup(popup_a1426d752df43e45a5c46f68220e8207)
+        ;
+
+        
+    
+    
+            var circle_marker_27b6a4fedb6ad3ad6995b5a2346eae39 = L.circleMarker(
+                [28.5806, -81.4755],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_b68564095392555d81ff25b9ed07198b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_17ef172ae6d7dc4df3d39a8ebe6a8da3 = $(`<div id="html_17ef172ae6d7dc4df3d39a8ebe6a8da3" style="width: 100.0%; height: 100.0%;"><b>June 07, 2025</b><br>2793 N Hiawassee Rd<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_b68564095392555d81ff25b9ed07198b.setContent(html_17ef172ae6d7dc4df3d39a8ebe6a8da3);
+            
+        
+
+        circle_marker_27b6a4fedb6ad3ad6995b5a2346eae39.bindPopup(popup_b68564095392555d81ff25b9ed07198b)
+        ;
+
+        
+    
+    
+            var circle_marker_7b9a2839b924469601f2fb809d6ebe2b = L.circleMarker(
+                [28.5524, -81.417],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_70129cd067376770e359498ead38a199 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3af6f8acfc9f72d87cd9f62ddbb99cdf = $(`<div id="html_3af6f8acfc9f72d87cd9f62ddbb99cdf" style="width: 100.0%; height: 100.0%;"><b>June 13, 2025</b><br>3300 W Colonial Dr<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_70129cd067376770e359498ead38a199.setContent(html_3af6f8acfc9f72d87cd9f62ddbb99cdf);
+            
+        
+
+        circle_marker_7b9a2839b924469601f2fb809d6ebe2b.bindPopup(popup_70129cd067376770e359498ead38a199)
+        ;
+
+        
+    
+    
+            var circle_marker_725433a5fee19c5c23e39e6b0c0cecf6 = L.circleMarker(
+                [28.558440529417656, -81.48675898951025],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_93c9affbd24230671a6862ec42c60aea = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_be6807676c157176495479f3886a64d1 = $(`<div id="html_be6807676c157176495479f3886a64d1" style="width: 100.0%; height: 100.0%;"><b>June 15, 2025</b><br>7300 block of Woodhill Park Dr<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 3</div>`)[0];
+                popup_93c9affbd24230671a6862ec42c60aea.setContent(html_be6807676c157176495479f3886a64d1);
+            
+        
+
+        circle_marker_725433a5fee19c5c23e39e6b0c0cecf6.bindPopup(popup_93c9affbd24230671a6862ec42c60aea)
+        ;
+
+        
+    
+    
+            var circle_marker_5f160c4a622e8898af592ebf81d113ef = L.circleMarker(
+                [28.597, -81.4509],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_b7be731d8e175b169904b4c6b2718317 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9110924fa34bd91dc517bcf98cb01ccc = $(`<div id="html_9110924fa34bd91dc517bcf98cb01ccc" style="width: 100.0%; height: 100.0%;"><b>June 15, 2025</b><br>5185 North Ln<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_b7be731d8e175b169904b4c6b2718317.setContent(html_9110924fa34bd91dc517bcf98cb01ccc);
+            
+        
+
+        circle_marker_5f160c4a622e8898af592ebf81d113ef.bindPopup(popup_b7be731d8e175b169904b4c6b2718317)
+        ;
+
+        
+    
+    
+            var circle_marker_2f846c0f853638d0db987661504630d7 = L.circleMarker(
+                [28.5244, -81.4198],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_c0fd2ad47f29b8fae05017a2899eb1d8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8ad28fbf727bedc32fa9628b523925ee = $(`<div id="html_8ad28fbf727bedc32fa9628b523925ee" style="width: 100.0%; height: 100.0%;"><b>June 16, 2025</b><br>1500 block of Wilts Cir E<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_c0fd2ad47f29b8fae05017a2899eb1d8.setContent(html_8ad28fbf727bedc32fa9628b523925ee);
+            
+        
+
+        circle_marker_2f846c0f853638d0db987661504630d7.bindPopup(popup_c0fd2ad47f29b8fae05017a2899eb1d8)
+        ;
+
+        
+    
+    
+            var circle_marker_057bd489582acafffae2688fcf40e239 = L.circleMarker(
+                [28.5996, -81.4596],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_0121151867ed0476d93c7e16665ed91c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f8bea921e394b31c30c5cf7faf21a713 = $(`<div id="html_f8bea921e394b31c30c5cf7faf21a713" style="width: 100.0%; height: 100.0%;"><b>June 18, 2025</b><br>5800 block of Elon Dr<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_0121151867ed0476d93c7e16665ed91c.setContent(html_f8bea921e394b31c30c5cf7faf21a713);
+            
+        
+
+        circle_marker_057bd489582acafffae2688fcf40e239.bindPopup(popup_0121151867ed0476d93c7e16665ed91c)
+        ;
+
+        
+    
+    
+            var circle_marker_c2fa050a1e89a85c1202acfefb2f375c = L.circleMarker(
+                [28.4882, -81.4047],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_b0f1711731ded07ec6b420d1997c8eb2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_876dbab7e9c3cab733c2308602f71a46 = $(`<div id="html_876dbab7e9c3cab733c2308602f71a46" style="width: 100.0%; height: 100.0%;"><b>June 23, 2025</b><br>1980 Lake Fountain Dr<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_b0f1711731ded07ec6b420d1997c8eb2.setContent(html_876dbab7e9c3cab733c2308602f71a46);
+            
+        
+
+        circle_marker_c2fa050a1e89a85c1202acfefb2f375c.bindPopup(popup_b0f1711731ded07ec6b420d1997c8eb2)
+        ;
+
+        
+    
+    
+            var circle_marker_2cc24c989d06b66b1ed2114187212330 = L.circleMarker(
+                [28.567, -81.2989],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_7a74278622cd733349750079559c5cde = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_965ab9e7ec5e4f9b3d2fc9613bbf1fa3 = $(`<div id="html_965ab9e7ec5e4f9b3d2fc9613bbf1fa3" style="width: 100.0%; height: 100.0%;"><b>July 05, 2025</b><br>800 Lombard St<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 2</div>`)[0];
+                popup_7a74278622cd733349750079559c5cde.setContent(html_965ab9e7ec5e4f9b3d2fc9613bbf1fa3);
+            
+        
+
+        circle_marker_2cc24c989d06b66b1ed2114187212330.bindPopup(popup_7a74278622cd733349750079559c5cde)
+        ;
+
+        
+    
+    
+            var circle_marker_d22cdbe7f96f221ccbb76f26860e139f = L.circleMarker(
+                [28.5732, -81.3771],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_c75b72b785805b44ce1410c1f965c0e8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bd547e0e15ff0f9de7bdcd800368e0a0 = $(`<div id="html_bd547e0e15ff0f9de7bdcd800368e0a0" style="width: 100.0%; height: 100.0%;"><b>July 05, 2025</b><br>Orlando Central Pkwy and Presidents Dr<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_c75b72b785805b44ce1410c1f965c0e8.setContent(html_bd547e0e15ff0f9de7bdcd800368e0a0);
+            
+        
+
+        circle_marker_d22cdbe7f96f221ccbb76f26860e139f.bindPopup(popup_c75b72b785805b44ce1410c1f965c0e8)
+        ;
+
+        
+    
+    
+            var circle_marker_80508bca01815d4971065fa9fb1f8670 = L.circleMarker(
+                [28.6143, -81.4045],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_7e48d8b642b6b40483a00d2b5dbb8c52 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_23bf20977ae1af6bfb505dadecbabfe1 = $(`<div id="html_23bf20977ae1af6bfb505dadecbabfe1" style="width: 100.0%; height: 100.0%;"><b>July 09, 2025</b><br>1600 block of Leeway Ave<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_7e48d8b642b6b40483a00d2b5dbb8c52.setContent(html_23bf20977ae1af6bfb505dadecbabfe1);
+            
+        
+
+        circle_marker_80508bca01815d4971065fa9fb1f8670.bindPopup(popup_7e48d8b642b6b40483a00d2b5dbb8c52)
+        ;
+
+        
+    
+    
+            var circle_marker_34e8757e46df77f571473e54ec65ad2b = L.circleMarker(
+                [28.5264, -81.3992],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_d7522bfc596a10d6890df22683e0a5ec = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1878a4323cd1ae4324b4dcbe924fcf65 = $(`<div id="html_1878a4323cd1ae4324b4dcbe924fcf65" style="width: 100.0%; height: 100.0%;"><b>July 10, 2025</b><br>18th St and S Nashville Ave<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_d7522bfc596a10d6890df22683e0a5ec.setContent(html_1878a4323cd1ae4324b4dcbe924fcf65);
+            
+        
+
+        circle_marker_34e8757e46df77f571473e54ec65ad2b.bindPopup(popup_d7522bfc596a10d6890df22683e0a5ec)
+        ;
+
+        
+    
+    
+            var circle_marker_390d8e2cc3753af84bd5b54779670a91 = L.circleMarker(
+                [28.5015, -81.3972],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_198723bfb0e9cb5d7491bba6dd6936cb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bb6086c95e45bfd8d235e64a2a8abdf6 = $(`<div id="html_bb6086c95e45bfd8d235e64a2a8abdf6" style="width: 100.0%; height: 100.0%;"><b>August 02, 2025</b><br>4100 block of S Orange Blossom Trail<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_198723bfb0e9cb5d7491bba6dd6936cb.setContent(html_bb6086c95e45bfd8d235e64a2a8abdf6);
+            
+        
+
+        circle_marker_390d8e2cc3753af84bd5b54779670a91.bindPopup(popup_198723bfb0e9cb5d7491bba6dd6936cb)
+        ;
+
+        
+    
+    
+            var circle_marker_da2eda0824db1a23db28d03a0c5c53fc = L.circleMarker(
+                [28.5475, -81.3933],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_4b1cfb766322f2659b16779126ace2c6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1472dd1857020d2d64eee9a949d724bf = $(`<div id="html_1472dd1857020d2d64eee9a949d724bf" style="width: 100.0%; height: 100.0%;"><b>August 04, 2025</b><br>Westmoreland Dr and Livingston St<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_4b1cfb766322f2659b16779126ace2c6.setContent(html_1472dd1857020d2d64eee9a949d724bf);
+            
+        
+
+        circle_marker_da2eda0824db1a23db28d03a0c5c53fc.bindPopup(popup_4b1cfb766322f2659b16779126ace2c6)
+        ;
+
+        
+    
+    
+            var circle_marker_b02a4ad0521cf68f9c9e830deb6a327b = L.circleMarker(
+                [28.5774, -81.465],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_e2c005a9eda9bb57be4faaa6a4e97642 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_12f98e2ebaa12865b966bcf7a8eff9e8 = $(`<div id="html_12f98e2ebaa12865b966bcf7a8eff9e8" style="width: 100.0%; height: 100.0%;"><b>August 06, 2025</b><br>6000 block of Park Hamilton Blvd<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 3</div>`)[0];
+                popup_e2c005a9eda9bb57be4faaa6a4e97642.setContent(html_12f98e2ebaa12865b966bcf7a8eff9e8);
+            
+        
+
+        circle_marker_b02a4ad0521cf68f9c9e830deb6a327b.bindPopup(popup_e2c005a9eda9bb57be4faaa6a4e97642)
+        ;
+
+        
+    
+    
+            var circle_marker_40ead82750d42f00d9ec8cdc645d7224 = L.circleMarker(
+                [28.521, -81.3888],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_05406f32442918bedae56835d3511a47 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2fe7ec7d4903eba61caa9fc00d0b95a5 = $(`<div id="html_2fe7ec7d4903eba61caa9fc00d0b95a5" style="width: 100.0%; height: 100.0%;"><b>August 09, 2025</b><br>700 block of 20th St<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_05406f32442918bedae56835d3511a47.setContent(html_2fe7ec7d4903eba61caa9fc00d0b95a5);
+            
+        
+
+        circle_marker_40ead82750d42f00d9ec8cdc645d7224.bindPopup(popup_05406f32442918bedae56835d3511a47)
+        ;
+
+        
+    
+    
+            var circle_marker_0512d866466ee5751e074e723cb3bff6 = L.circleMarker(
+                [28.5509, -81.383],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_2bc2007e7828e934c013008d88d89427 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3013383323d801614c15a083b1d36b4b = $(`<div id="html_3013383323d801614c15a083b1d36b4b" style="width: 100.0%; height: 100.0%;"><b>August 12, 2025</b><br>300 block of W Concord St<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_2bc2007e7828e934c013008d88d89427.setContent(html_3013383323d801614c15a083b1d36b4b);
+            
+        
+
+        circle_marker_0512d866466ee5751e074e723cb3bff6.bindPopup(popup_2bc2007e7828e934c013008d88d89427)
+        ;
+
+        
+    
+    
+            var circle_marker_17950b670170ae2a2614beac6c36238f = L.circleMarker(
+                [28.4713, -81.3694],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_39215912b94bc0468ee60f5f6337822f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7032cffd5f1a911d1cf5db28711a17f9 = $(`<div id="html_7032cffd5f1a911d1cf5db28711a17f9" style="width: 100.0%; height: 100.0%;"><b>August 18, 2025</b><br>E Wallace St<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 2</div>`)[0];
+                popup_39215912b94bc0468ee60f5f6337822f.setContent(html_7032cffd5f1a911d1cf5db28711a17f9);
+            
+        
+
+        circle_marker_17950b670170ae2a2614beac6c36238f.bindPopup(popup_39215912b94bc0468ee60f5f6337822f)
+        ;
+
+        
+    
+    
+            var circle_marker_32d9dcc8eeeec5b2389963faa911ecef = L.circleMarker(
+                [28.5483, -81.3864],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_5da000412c0465f6464b4daf35c433f7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e9c58f0ca6109eee0fbcdad0059653d2 = $(`<div id="html_e9c58f0ca6109eee0fbcdad0059653d2" style="width: 100.0%; height: 100.0%;"><b>August 22, 2025</b><br>437 N Terry Ave<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_5da000412c0465f6464b4daf35c433f7.setContent(html_e9c58f0ca6109eee0fbcdad0059653d2);
+            
+        
+
+        circle_marker_32d9dcc8eeeec5b2389963faa911ecef.bindPopup(popup_5da000412c0465f6464b4daf35c433f7)
+        ;
+
+        
+    
+    
+            var circle_marker_fb35fbc67e84b130d3fc8a9c507ed016 = L.circleMarker(
+                [28.5788, -81.46],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_ce21e652a78d741422f870b8334ec284 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f922fe616fce3e8d94b8fa9081ae937c = $(`<div id="html_f922fe616fce3e8d94b8fa9081ae937c" style="width: 100.0%; height: 100.0%;"><b>August 23, 2025</b><br>2600 block of Sheringham Rd<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_ce21e652a78d741422f870b8334ec284.setContent(html_f922fe616fce3e8d94b8fa9081ae937c);
+            
+        
+
+        circle_marker_fb35fbc67e84b130d3fc8a9c507ed016.bindPopup(popup_ce21e652a78d741422f870b8334ec284)
+        ;
+
+        
+    
+    
+            var circle_marker_8dba7f8afd9e84ffb1b2ae416a185a68 = L.circleMarker(
+                [28.6041, -81.4293],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_da47ec085c6809b19feb5eb307257701 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d4e90f99e5730bb13be64cd01f735a82 = $(`<div id="html_d4e90f99e5730bb13be64cd01f735a82" style="width: 100.0%; height: 100.0%;"><b>August 24, 2025</b><br>5175 Cinderlane Pkwy<br><b>Killed:</b> 2 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_da47ec085c6809b19feb5eb307257701.setContent(html_d4e90f99e5730bb13be64cd01f735a82);
+            
+        
+
+        circle_marker_8dba7f8afd9e84ffb1b2ae416a185a68.bindPopup(popup_da47ec085c6809b19feb5eb307257701)
+        ;
+
+        
+    
+    
+            var circle_marker_b5eb7cb6f70e657016c17dc6328d8891 = L.circleMarker(
+                [28.5419, -81.4376],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_70b74b4a9195d3e036c705ec0e44cb19 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_431c19ba9b7adae8bfcc3fd069f4b74a = $(`<div id="html_431c19ba9b7adae8bfcc3fd069f4b74a" style="width: 100.0%; height: 100.0%;"><b>September 01, 2025</b><br>24 Fanfair Ave<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_70b74b4a9195d3e036c705ec0e44cb19.setContent(html_431c19ba9b7adae8bfcc3fd069f4b74a);
+            
+        
+
+        circle_marker_b5eb7cb6f70e657016c17dc6328d8891.bindPopup(popup_70b74b4a9195d3e036c705ec0e44cb19)
+        ;
+
+        
+    
+    
+            var circle_marker_a432345b65e9de60dc3f7c21c0d5e2ad = L.circleMarker(
+                [28.4502, -81.4043],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_45b09902aeb87c52a033bd7686b8cbc9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1309e1948e8abffd5b1e5a6a56de8990 = $(`<div id="html_1309e1948e8abffd5b1e5a6a56de8990" style="width: 100.0%; height: 100.0%;"><b>September 09, 2025</b><br>1812 W Sand Lake Rd<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_45b09902aeb87c52a033bd7686b8cbc9.setContent(html_1309e1948e8abffd5b1e5a6a56de8990);
+            
+        
+
+        circle_marker_a432345b65e9de60dc3f7c21c0d5e2ad.bindPopup(popup_45b09902aeb87c52a033bd7686b8cbc9)
+        ;
+
+        
+    
+    
+            var circle_marker_50b28495217b48b3e944054ab97432e0 = L.circleMarker(
+                [28.5319, -81.414],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_9e68817e64450968da7177bb264790ba = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6a7a38c8e2a5c69b995e16553193c563 = $(`<div id="html_6a7a38c8e2a5c69b995e16553193c563" style="width: 100.0%; height: 100.0%;"><b>September 10, 2025</b><br>Orange Center Blvd and John Young Pkwy<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_9e68817e64450968da7177bb264790ba.setContent(html_6a7a38c8e2a5c69b995e16553193c563);
+            
+        
+
+        circle_marker_50b28495217b48b3e944054ab97432e0.bindPopup(popup_9e68817e64450968da7177bb264790ba)
+        ;
+
+        
+    
+    
+            var circle_marker_b5040a4b29383101662700820e21ad5d = L.circleMarker(
+                [28.5573, -81.4914],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_6235d4047093808be4088665b7676b45 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a767fb5ac8b521bfeae0316039ca4fb7 = $(`<div id="html_a767fb5ac8b521bfeae0316039ca4fb7" style="width: 100.0%; height: 100.0%;"><b>September 12, 2025</b><br>1724 London Crest Dr<br><b>Killed:</b> 2 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_6235d4047093808be4088665b7676b45.setContent(html_a767fb5ac8b521bfeae0316039ca4fb7);
+            
+        
+
+        circle_marker_b5040a4b29383101662700820e21ad5d.bindPopup(popup_6235d4047093808be4088665b7676b45)
+        ;
+
+        
+    
+    
+            var circle_marker_6ab8f0d63623d68a9dd19a829a441e61 = L.circleMarker(
+                [28.6129, -81.4133],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_93b7a643b1a063ca75dfc961513ec306 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b1de647bb03ffb04c9d1637f7c963fc2 = $(`<div id="html_b1de647bb03ffb04c9d1637f7c963fc2" style="width: 100.0%; height: 100.0%;"><b>September 19, 2025</b><br>2800 block of Weston Ln<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_93b7a643b1a063ca75dfc961513ec306.setContent(html_b1de647bb03ffb04c9d1637f7c963fc2);
+            
+        
+
+        circle_marker_6ab8f0d63623d68a9dd19a829a441e61.bindPopup(popup_93b7a643b1a063ca75dfc961513ec306)
+        ;
+
+        
+    
+    
+            var circle_marker_9e49be42f54ba656d8ef8bbbd39e6456 = L.circleMarker(
+                [28.57114052941765, -81.47855898951025],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_a1c7555238a4fe3620799dbd53cee6ca = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2efee6fa749f1a45217b4d2807714491 = $(`<div id="html_2efee6fa749f1a45217b4d2807714491" style="width: 100.0%; height: 100.0%;"><b>September 21, 2025</b><br>2200 block of Okada Ct<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 2</div>`)[0];
+                popup_a1c7555238a4fe3620799dbd53cee6ca.setContent(html_2efee6fa749f1a45217b4d2807714491);
+            
+        
+
+        circle_marker_9e49be42f54ba656d8ef8bbbd39e6456.bindPopup(popup_a1c7555238a4fe3620799dbd53cee6ca)
+        ;
+
+        
+    
+    
+            var circle_marker_0d6821e998af7d99e351375836c640e0 = L.circleMarker(
+                [28.574, -81.4478],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_655cdeb0e83b7e82bbc045bbe927d64a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8070d0deada345ddaebf859b253947a8 = $(`<div id="html_8070d0deada345ddaebf859b253947a8" style="width: 100.0%; height: 100.0%;"><b>September 26, 2025</b><br>4900 block of Keith Pl<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_655cdeb0e83b7e82bbc045bbe927d64a.setContent(html_8070d0deada345ddaebf859b253947a8);
+            
+        
+
+        circle_marker_0d6821e998af7d99e351375836c640e0.bindPopup(popup_655cdeb0e83b7e82bbc045bbe927d64a)
+        ;
+
+        
+    
+    
+            var circle_marker_1de92e7977b0ef4372fe11814da0d549 = L.circleMarker(
+                [28.4453, -81.4289],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_e2173fda5dba39e6ca56d8e6762c0a63 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ded155e9c1ea9f4d6574c0cf0578f6af = $(`<div id="html_ded155e9c1ea9f4d6574c0cf0578f6af" style="width: 100.0%; height: 100.0%;"><b>September 29, 2025</b><br>4101 Equity Row<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_e2173fda5dba39e6ca56d8e6762c0a63.setContent(html_ded155e9c1ea9f4d6574c0cf0578f6af);
+            
+        
+
+        circle_marker_1de92e7977b0ef4372fe11814da0d549.bindPopup(popup_e2173fda5dba39e6ca56d8e6762c0a63)
+        ;
+
+        
+    
+    
+            var circle_marker_e24d471cb979fc9bc5cbd80384ab41db = L.circleMarker(
+                [28.472, -81.3892],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_df213a464f05c2c7bd9098dbc1b21721 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_71dabeefc67ba196944bcbbe5687167b = $(`<div id="html_71dabeefc67ba196944bcbbe5687167b" style="width: 100.0%; height: 100.0%;"><b>October 09, 2025</b><br>814 W Oak Ridge Rd<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_df213a464f05c2c7bd9098dbc1b21721.setContent(html_71dabeefc67ba196944bcbbe5687167b);
+            
+        
+
+        circle_marker_e24d471cb979fc9bc5cbd80384ab41db.bindPopup(popup_df213a464f05c2c7bd9098dbc1b21721)
+        ;
+
+        
+    
+    
+            var circle_marker_bd381f42fb70a885377568384197ac4f = L.circleMarker(
+                [28.4639, -81.305],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_1bc6ce80d80e9fc806c17495c8d31c7e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_97bf210ebe742fd368eb533570b96701 = $(`<div id="html_97bf210ebe742fd368eb533570b96701" style="width: 100.0%; height: 100.0%;"><b>October 20, 2025</b><br>5901 Hazeltine National Dr<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_1bc6ce80d80e9fc806c17495c8d31c7e.setContent(html_97bf210ebe742fd368eb533570b96701);
+            
+        
+
+        circle_marker_bd381f42fb70a885377568384197ac4f.bindPopup(popup_1bc6ce80d80e9fc806c17495c8d31c7e)
+        ;
+
+        
+    
+    
+            var circle_marker_55493688f1100ff3fdb2875a37d42601 = L.circleMarker(
+                [28.4591, -81.4797],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_9593542cc68974e9d44dcda8c835c5c0 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_278a255f616d7be05ba47fe0af180c86 = $(`<div id="html_278a255f616d7be05ba47fe0af180c86" style="width: 100.0%; height: 100.0%;"><b>October 22, 2025</b><br>7300 block of Spring Villas Cir<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_9593542cc68974e9d44dcda8c835c5c0.setContent(html_278a255f616d7be05ba47fe0af180c86);
+            
+        
+
+        circle_marker_55493688f1100ff3fdb2875a37d42601.bindPopup(popup_9593542cc68974e9d44dcda8c835c5c0)
+        ;
+
+        
+    
+    
+            var circle_marker_22d1878faaec9be1240de12153a703ea = L.circleMarker(
+                [28.5411, -81.2685],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_1b47b2419be72be1f721c9523b9967f6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9608dc4161688c82dbc2e0f1c3321d74 = $(`<div id="html_9608dc4161688c82dbc2e0f1c3321d74" style="width: 100.0%; height: 100.0%;"><b>November 08, 2025</b><br>8300 block of Calais Cir<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 2</div>`)[0];
+                popup_1b47b2419be72be1f721c9523b9967f6.setContent(html_9608dc4161688c82dbc2e0f1c3321d74);
+            
+        
+
+        circle_marker_22d1878faaec9be1240de12153a703ea.bindPopup(popup_1b47b2419be72be1f721c9523b9967f6)
+        ;
+
+        
+    
+    
+            var circle_marker_725ce9f25fc06301750defd0c03f600b = L.circleMarker(
+                [28.4981, -81.399],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_d580ad5644f384734fb1f97358c2beba = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d07b3553fd788dc54be89852cc5a3773 = $(`<div id="html_d07b3553fd788dc54be89852cc5a3773" style="width: 100.0%; height: 100.0%;"><b>November 10, 2025</b><br>1400 block of 45th St<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_d580ad5644f384734fb1f97358c2beba.setContent(html_d07b3553fd788dc54be89852cc5a3773);
+            
+        
+
+        circle_marker_725ce9f25fc06301750defd0c03f600b.bindPopup(popup_d580ad5644f384734fb1f97358c2beba)
+        ;
+
+        
+    
+    
+            var circle_marker_f4efa436a33468fb50469b143b79aae3 = L.circleMarker(
+                [28.603, -81.4067],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_7e3ccb779328861c958807701956929f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4e002cf5305d1712317e9e213c686391 = $(`<div id="html_4e002cf5305d1712317e9e213c686391" style="width: 100.0%; height: 100.0%;"><b>November 14, 2025</b><br>4864 Edgewater Dr<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_7e3ccb779328861c958807701956929f.setContent(html_4e002cf5305d1712317e9e213c686391);
+            
+        
+
+        circle_marker_f4efa436a33468fb50469b143b79aae3.bindPopup(popup_7e3ccb779328861c958807701956929f)
+        ;
+
+        
+    
+    
+            var circle_marker_9b915fb8c942051ad2db54b9ff41fe33 = L.circleMarker(
+                [28.6109, -81.4676],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_558d839b6e5e3ff4a88dfbdc6f38c774 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_075694759dee2c3fb22bdca91e7b7a7b = $(`<div id="html_075694759dee2c3fb22bdca91e7b7a7b" style="width: 100.0%; height: 100.0%;"><b>November 15, 2025</b><br>Clarcona Ocoee Rd<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 2</div>`)[0];
+                popup_558d839b6e5e3ff4a88dfbdc6f38c774.setContent(html_075694759dee2c3fb22bdca91e7b7a7b);
+            
+        
+
+        circle_marker_9b915fb8c942051ad2db54b9ff41fe33.bindPopup(popup_558d839b6e5e3ff4a88dfbdc6f38c774)
+        ;
+
+        
+    
+    
+            var circle_marker_fb48af9d12b6637dc791872a654c229f = L.circleMarker(
+                [28.527, -81.4196],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_0e995104f99d648fa2f2335a13dbf163 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b3df8e7022daf8a7d726c016f7d14335 = $(`<div id="html_b3df8e7022daf8a7d726c016f7d14335" style="width: 100.0%; height: 100.0%;"><b>November 23, 2025</b><br>3400 Columbia St<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_0e995104f99d648fa2f2335a13dbf163.setContent(html_b3df8e7022daf8a7d726c016f7d14335);
+            
+        
+
+        circle_marker_fb48af9d12b6637dc791872a654c229f.bindPopup(popup_0e995104f99d648fa2f2335a13dbf163)
+        ;
+
+        
+    
+    
+            var circle_marker_8dd4890f366cf842439885fffca89cba = L.circleMarker(
+                [28.5584, -81.4867],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_51cf33c5b2d7c0df29f072d1d66faea4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_18183cd3732cf44c0d79afecff097a19 = $(`<div id="html_18183cd3732cf44c0d79afecff097a19" style="width: 100.0%; height: 100.0%;"><b>November 25, 2025</b><br>7300 block of Woodhill Park Dr<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_51cf33c5b2d7c0df29f072d1d66faea4.setContent(html_18183cd3732cf44c0d79afecff097a19);
+            
+        
+
+        circle_marker_8dd4890f366cf842439885fffca89cba.bindPopup(popup_51cf33c5b2d7c0df29f072d1d66faea4)
+        ;
+
+        
+    
+    
+            var circle_marker_de86da1805183281f8d59735f908b1db = L.circleMarker(
+                [28.555, -81.2245],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_af107f5f9515f6d5c1250a4a5d5de69e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f07c97d9e6aa110aa562ce55e7f8ced9 = $(`<div id="html_f07c97d9e6aa110aa562ce55e7f8ced9" style="width: 100.0%; height: 100.0%;"><b>November 27, 2025</b><br>600 block of Cedar Bend Cir<br><b>Killed:</b> 2 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_af107f5f9515f6d5c1250a4a5d5de69e.setContent(html_f07c97d9e6aa110aa562ce55e7f8ced9);
+            
+        
+
+        circle_marker_de86da1805183281f8d59735f908b1db.bindPopup(popup_af107f5f9515f6d5c1250a4a5d5de69e)
+        ;
+
+        
+    
+    
+            var circle_marker_0f144652ad6486d487a06600f82af876 = L.circleMarker(
+                [28.4003, -81.4888],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_188db8d4e35d7ab9a360eb50bd25bc0f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b33ec3db9bffc1a401555a3c031740a8 = $(`<div id="html_b33ec3db9bffc1a401555a3c031740a8" style="width: 100.0%; height: 100.0%;"><b>December 14, 2025</b><br>Redmond St<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_188db8d4e35d7ab9a360eb50bd25bc0f.setContent(html_b33ec3db9bffc1a401555a3c031740a8);
+            
+        
+
+        circle_marker_0f144652ad6486d487a06600f82af876.bindPopup(popup_188db8d4e35d7ab9a360eb50bd25bc0f)
+        ;
+
+        
+    
+    
+            var circle_marker_a9f5b88796c77c0c75482860cb92b06b = L.circleMarker(
+                [28.5821, -81.29],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_15244054e19b461acd4095d47d85ef92 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e82554681a298304bba7d3bc893faf99 = $(`<div id="html_e82554681a298304bba7d3bc893faf99" style="width: 100.0%; height: 100.0%;"><b>December 17, 2025</b><br>7400 block of Faculty Dr<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_15244054e19b461acd4095d47d85ef92.setContent(html_e82554681a298304bba7d3bc893faf99);
+            
+        
+
+        circle_marker_a9f5b88796c77c0c75482860cb92b06b.bindPopup(popup_15244054e19b461acd4095d47d85ef92)
+        ;
+
+        
+    
+    
+            var circle_marker_dbff74d243e4683f4f753384a7828070 = L.circleMarker(
+                [28.4795, -81.4229],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_6238cf0c992022810e34b88cca2e70e2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_bee54425871977bc581c839590ce0fbd = $(`<div id="html_bee54425871977bc581c839590ce0fbd" style="width: 100.0%; height: 100.0%;"><b>December 24, 2025</b><br>5500 PGA Blvd<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_6238cf0c992022810e34b88cca2e70e2.setContent(html_bee54425871977bc581c839590ce0fbd);
+            
+        
+
+        circle_marker_dbff74d243e4683f4f753384a7828070.bindPopup(popup_6238cf0c992022810e34b88cca2e70e2)
+        ;
+
+        
+    
+    
+            var circle_marker_c1bb51a289be8f85b7f646d3e9368d2f = L.circleMarker(
+                [28.5711, -81.4785],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_7cd392d8c7f788053737b3f17a500487 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7ad0fd37c38377b9d8b7e07f06c6a1ec = $(`<div id="html_7ad0fd37c38377b9d8b7e07f06c6a1ec" style="width: 100.0%; height: 100.0%;"><b>December 25, 2025</b><br>2200 block of Okada Ct<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_7cd392d8c7f788053737b3f17a500487.setContent(html_7ad0fd37c38377b9d8b7e07f06c6a1ec);
+            
+        
+
+        circle_marker_c1bb51a289be8f85b7f646d3e9368d2f.bindPopup(popup_7cd392d8c7f788053737b3f17a500487)
+        ;
+
+        
+    
+    
+            var circle_marker_581fbb85cce5bf64e50b65a3cae9bc1c = L.circleMarker(
+                [28.4937, -81.407],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_c695bf760aa1748896ffc20d7f42e790 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_55b527e890f1eca2223880cb6f3db6e7 = $(`<div id="html_55b527e890f1eca2223880cb6f3db6e7" style="width: 100.0%; height: 100.0%;"><b>December 26, 2025</b><br>2200 block of Buchanan Bay Cir<br><b>Killed:</b> 0 &nbsp; <b>Injured:</b> 1</div>`)[0];
+                popup_c695bf760aa1748896ffc20d7f42e790.setContent(html_55b527e890f1eca2223880cb6f3db6e7);
+            
+        
+
+        circle_marker_581fbb85cce5bf64e50b65a3cae9bc1c.bindPopup(popup_c695bf760aa1748896ffc20d7f42e790)
+        ;
+
+        
+    
+    
+            var circle_marker_088a0b00a6abcea327d2d3742c913c49 = L.circleMarker(
+                [28.5152, -81.4004],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(marker_cluster_1dd50d0fd54003b1e1b749b56694458f);
+        
+    
+        var popup_453df154cb881380891b4022b94ea2ec = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_75d63a74b5ee87e792005e2df8a25e25 = $(`<div id="html_75d63a74b5ee87e792005e2df8a25e25" style="width: 100.0%; height: 100.0%;"><b>December 28, 2025</b><br>1500 block of 26th St<br><b>Killed:</b> 1 &nbsp; <b>Injured:</b> 0</div>`)[0];
+                popup_453df154cb881380891b4022b94ea2ec.setContent(html_75d63a74b5ee87e792005e2df8a25e25);
+            
+        
+
+        circle_marker_088a0b00a6abcea327d2d3742c913c49.bindPopup(popup_453df154cb881380891b4022b94ea2ec)
+        ;
+
+        
+    
+    
+            marker_cluster_1dd50d0fd54003b1e1b749b56694458f.addTo(map_1494520840cb331fa9b2e8c92b9e2c40);
+        
+    
+            var layer_control_20c6b83861332f4073127b2869b51bd3_layers = {
+                base_layers : {
+                    "cartodbpositron" : tile_layer_a6d07bfb3bfd536e3b733d872d7cadd5,
+                },
+                overlays :  {
+                    "Incidents" : marker_cluster_1dd50d0fd54003b1e1b749b56694458f,
+                },
+            };
+            let layer_control_20c6b83861332f4073127b2869b51bd3 = L.control.layers(
+                layer_control_20c6b83861332f4073127b2869b51bd3_layers.base_layers,
+                layer_control_20c6b83861332f4073127b2869b51bd3_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_1494520840cb331fa9b2e8c92b9e2c40);
+
+        
+</script>
+</html>
