@@ -1173,8 +1173,8 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf, dark=False):
   }}
 
   function padBounds(b) {{
-    var dlat = (b[2] - b[0]) * 0.05;
-    var dlon = (b[3] - b[1]) * 0.05;
+    var dlat = (b[2] - b[0]) * 0.20;
+    var dlon = (b[3] - b[1]) * 0.20;
     var pad  = Math.min(dlat, dlon);
     return [[b[0] - pad, b[1] - pad], [b[2] + pad, b[3] + pad]];
   }}
