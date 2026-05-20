@@ -1061,6 +1061,7 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf, dark=False):
   #um-table th {{ background:{th_bg}; text-align:left; }}
   #um-table td:not(:first-child) {{ text-align:right; }}
   #um-table .total-row {{ font-weight:bold; background:{total_bg}; }}
+  #um-table tbody th {{ text-align:left; font-weight:normal; background:none; }}
   #um-close {{ float:right; background:none; border:none; font-size:18px; cursor:pointer; line-height:1; color:{ui_text}; }}
 </style>
 
@@ -1088,7 +1089,7 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf, dark=False):
   <button id="um-close">&#x00D7;</button>
   <span id="um-table-title" style="font-size:14px;font-weight:bold;"></span>
   <table>
-    <thead><tr><th>Period</th><th>Injured</th><th>Killed</th><th>Incidents</th></tr></thead>
+    <thead><tr><th></th><th>Before 2018&#x2013;22</th><th>After 2023+</th><th>Total</th></tr></thead>
     <tbody id="um-table-body"></tbody>
   </table>
 </div>
@@ -1202,12 +1203,12 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf, dark=False):
     var ti = s.before_injured + s.after_injured;
     document.getElementById('um-table-title').textContent = name + ' (' + type + ')';
     document.getElementById('um-table-body').innerHTML = [
-      ['Before (2018–2022)',   s.before_injured, s.before_killed, s.before_count],
-      ['After (2023–Present)', s.after_injured,  s.after_killed,  s.after_count],
-      ['Total (2018–Present)', ti,               tk,              tc]
-    ].map(function(r, i) {{
-      var cls = i === 2 ? ' class="total-row"' : '';
-      return '<tr'+cls+'><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';
+      ['Injured',   s.before_injured, s.after_injured, ti,  false],
+      ['Killed',    s.before_killed,  s.after_killed,  tk,  false],
+      ['Incidents', s.before_count,   s.after_count,   tc,  true]
+    ].map(function(r) {{
+      var cls = r[4] ? ' class="total-row"' : '';
+      return '<tr'+cls+'><th>'+r[0]+'</th><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';
     }}).join('');
     document.getElementById('um-table').style.display = 'block';
   }}
