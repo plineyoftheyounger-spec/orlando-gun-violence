@@ -113,76 +113,71 @@ html = f"""<!DOCTYPE html>
   <style>
     body {{
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0f0f0f;
-      color: #e0e0e0;
+      background: #fff;
+      color: #1a1a1a;
       margin: 0;
       padding: 20px 24px;
     }}
-    h1 {{ font-size: 1.3rem; margin: 0 0 4px; color: #fff; }}
-    p.sub {{ color: #888; font-size: 0.85rem; margin: 0 0 20px; }}
+    h1 {{ font-size: 1.3rem; margin: 0 0 4px; color: #111; }}
+    p.sub {{ color: #666; font-size: 0.85rem; margin: 0 0 20px; }}
 
     .dataTables_wrapper .dataTables_filter input {{
-      background: #1e1e1e;
-      border: 1px solid #444;
-      color: #e0e0e0;
+      border: 1px solid #ccc;
       border-radius: 4px;
       padding: 4px 8px;
-    }}
-    .dataTables_wrapper .dataTables_length select {{
-      background: #1e1e1e;
-      border: 1px solid #444;
-      color: #e0e0e0;
+      color: #111;
     }}
     .dataTables_wrapper .dataTables_info,
-    .dataTables_wrapper .dataTables_paginate {{ color: #888; font-size: 0.82rem; }}
-    .dataTables_wrapper .dataTables_paginate .paginate_button {{ color: #aaa !important; }}
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {{ background: #2a2a2a !important; color: #fff !important; border: 1px solid #555 !important; }}
+    .dataTables_wrapper .dataTables_paginate {{ color: #666; font-size: 0.82rem; }}
+    .dataTables_wrapper .dataTables_paginate .paginate_button {{ color: #333 !important; }}
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {{ background: #e8e8e8 !important; color: #111 !important; border: 1px solid #bbb !important; }}
 
     table.dataTable {{
-      background: #141414;
+      background: #fff;
       border-collapse: collapse;
       width: 100%;
     }}
     table.dataTable thead tr:first-child th {{
-      background: #1a1a1a;
-      color: #ccc;
-      border-bottom: 1px solid #333;
+      background: #f0f0f0;
+      color: #222;
+      border-bottom: 1px solid #ccc;
       text-align: center;
       font-size: 0.78rem;
       white-space: nowrap;
       padding: 8px 10px;
     }}
     table.dataTable thead tr:nth-child(2) th {{
-      background: #1e1e1e;
-      color: #999;
+      background: #f7f7f7;
+      color: #555;
       font-size: 0.72rem;
       text-align: center;
       padding: 4px 8px;
-      border-bottom: 2px solid #333;
+      border-bottom: 2px solid #ccc;
     }}
-    table.dataTable tbody tr {{ background: #141414; }}
-    table.dataTable tbody tr:hover {{ background: #1c1c1c; }}
-    table.dataTable tbody tr:nth-child(even) {{ background: #181818; }}
-    table.dataTable tbody tr:nth-child(even):hover {{ background: #1c1c1c; }}
+    table.dataTable tbody tr {{ background: #fff; }}
+    table.dataTable tbody tr:hover {{ background: #f5f8ff; }}
+    table.dataTable tbody tr:nth-child(even) {{ background: #fafafa; }}
+    table.dataTable tbody tr:nth-child(even):hover {{ background: #f5f8ff; }}
     table.dataTable td, table.dataTable th {{
-      border-right: 1px solid #2a2a2a;
+      border-right: 1px solid #e0e0e0;
+      border-bottom: 1px solid #e8e8e8;
       padding: 5px 8px;
       font-size: 0.82rem;
     }}
 
     .nbd-col  {{ min-width: 180px; text-align: left !important; }}
-    .nbd-name {{ color: #d0d0d0; white-space: nowrap; }}
+    .nbd-name {{ color: #222; white-space: nowrap; font-weight: 500; }}
 
-    .era1-header {{ background: #1a2840 !important; color: #7ab3f0 !important; }}
-    .era2-header {{ background: #1a2d1a !important; color: #7acc7a !important; }}
-    .year-header  {{ background: #1e1e1e !important; color: #aaa !important; }}
+    .era1-header {{ background: #dbeafe !important; color: #1e40af !important; }}
+    .era2-header {{ background: #dcfce7 !important; color: #166534 !important; }}
+    .year-header  {{ background: #f0f0f0 !important; color: #555 !important; }}
 
-    th.era1, td.era1 {{ background-color: rgba(100,160,240,0.05); }}
-    th.era2, td.era2 {{ background-color: rgba(100,200,100,0.05); }}
+    th.era1, td.era1 {{ background-color: rgba(59,130,246,0.04); }}
+    th.era2, td.era2 {{ background-color: rgba(34,197,94,0.04); }}
 
-    td.killed {{ color: #e07070; font-weight: 600; }}
-    td.zero   {{ color: #444; }}
-    span.zero {{ color: #444; }}
+    td.killed {{ color: #c0392b; font-weight: 600; }}
+    td.zero   {{ color: #bbb; }}
+    span.zero {{ color: #bbb; }}
   </style>
 </head>
 <body>
