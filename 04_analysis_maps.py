@@ -1072,13 +1072,13 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf, dark=False):
 <div id="um-control">
   <span><b>Era:</b></span>
   <label><input type="checkbox" id="cb-before" checked>
-    <span class="sym-before">&#9733;&#10005;</span> Before 2018&#x2013;2022</label>
+    <span class="sym-before">&#9679;&#9650;</span> Before 2018&#x2013;2022</label>
   <label><input type="checkbox" id="cb-after" checked>
-    <span class="sym-after">&#9733;&#10005;</span> After 2023&#x2013;Present</label>
+    <span class="sym-after">&#9679;&#9650;</span> After 2023&#x2013;Present</label>
   <span class="sep">|</span>
   <span><b>Type:</b></span>
-  <label><input type="checkbox" id="cb-fatal" checked> Fatal &#9733;</label>
-  <label><input type="checkbox" id="cb-injury" checked> Injury &#10005;</label>
+  <label><input type="checkbox" id="cb-fatal" checked> Fatal &#9650;</label>
+  <label><input type="checkbox" id="cb-injury" checked> Injury &#9679;</label>
   <span class="sep">|</span>
   <span><b>Boundaries:</b></span>
   <label><input type="checkbox" id="cb-nbds"> All neighborhoods</label>
