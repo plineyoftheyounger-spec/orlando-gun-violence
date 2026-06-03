@@ -9,8 +9,8 @@ Eras match 05_era_maps.ipynb:
   Era 2: 2023–Present
 """
 
-import json
 import pandas as pd
+import geopandas as gpd
 import config
 
 ERA1_YEARS = list(range(2018, 2023))
@@ -18,44 +18,63 @@ ERA2_YEARS = list(range(2023, 2027))
 ERA1_LABEL = "2018–2022"
 ERA2_LABEL = "2023–Present"
 
-# ── Load ───────────────────────────────────────────────────────────────────────
+UNKNOWN_LABEL = "Unknown / Outside Neighborhoods"
+
+# ── Load incidents ─────────────────────────────────────────────────────────────
 df = pd.read_csv(config.DATA_PROCESSED / "orlando_incidents_with_neighborhoods.csv")
-df["neighborhood"] = df["neighborhood"].fillna("Unknown / Outside Neighborhoods")
+df["neighborhood"] = df["neighborhood"].fillna(UNKNOWN_LABEL)
 
 all_years = sorted(df["year"].unique())
+
+# ── Build Kidz Zone → neighborhood mapping via spatial join ────────────────────
+nbds_gdf = gpd.read_file(config.NEIGHBORHOODS_DIR / "orlando_neighborhoods.geojson")
+kz_gdf   = gpd.read_file(config.NEIGHBORHOODS_DIR / "kidz_zones_official.geojson")
+kz_gdf   = kz_gdf.to_crs(nbds_gdf.crs)
+
+kz_join = gpd.sjoin(
+    nbds_gdf[["NeighborhoodName", "geometry"]],
+    kz_gdf[["KZ_Name", "geometry"]],
+    how="inner", predicate="intersects"
+)[["NeighborhoodName", "KZ_Name"]].drop_duplicates()
+
+# Collapse multiple KZ hits per neighborhood into one label
+kz_map = (
+    kz_join.groupby("NeighborhoodName")["KZ_Name"]
+    .apply(lambda x: " / ".join(sorted(set(x.str.replace(" Kidz Zone", "", regex=False)))))
+    .to_dict()
+)
 
 # ── Aggregate ─────────────────────────────────────────────────────────────────
 def agg(sub):
     return pd.Series({
-        "killed": int(sub["killed"].sum()),
-        "injured": int(sub["injured"].sum()),
+        "killed":    int(sub["killed"].sum()),
+        "injured":   int(sub["injured"].sum()),
         "incidents": len(sub),
     })
 
-# Era summaries
-era1 = df[df["year"].isin(ERA1_YEARS)].groupby("neighborhood").apply(agg).reset_index()
-era2 = df[df["year"].isin(ERA2_YEARS)].groupby("neighborhood").apply(agg).reset_index()
-
-# Year-by-year
-by_year = df.groupby(["neighborhood", "year"]).apply(agg).reset_index()
-
-# All neighborhoods (union)
-all_nbds = sorted(df["neighborhood"].unique())
+era1    = df[df["year"].isin(ERA1_YEARS)].groupby("neighborhood").apply(agg, include_groups=False).reset_index()
+era2    = df[df["year"].isin(ERA2_YEARS)].groupby("neighborhood").apply(agg, include_groups=False).reset_index()
+by_year = df.groupby(["neighborhood", "year"]).apply(agg, include_groups=False).reset_index()
 
 # ── Build row dicts ────────────────────────────────────────────────────────────
+UNKNOWN = UNKNOWN_LABEL
+all_nbds = sorted([n for n in df["neighborhood"].unique() if n != UNKNOWN])
+
 rows = []
 for nbd in all_nbds:
-    e1 = era1[era1["neighborhood"] == nbd].iloc[0] if len(era1[era1["neighborhood"] == nbd]) else None
-    e2 = era2[era2["neighborhood"] == nbd].iloc[0] if len(era2[era2["neighborhood"] == nbd]) else None
+    e1 = era1[era1["neighborhood"] == nbd]
+    e2 = era2[era2["neighborhood"] == nbd]
 
     row = {
         "neighborhood": nbd,
-        "e1_killed":    int(e1["killed"])    if e1 is not None else 0,
-        "e1_injured":   int(e1["injured"])   if e1 is not None else 0,
-        "e1_incidents": int(e1["incidents"]) if e1 is not None else 0,
-        "e2_killed":    int(e2["killed"])    if e2 is not None else 0,
-        "e2_injured":   int(e2["injured"])   if e2 is not None else 0,
-        "e2_incidents": int(e2["incidents"]) if e2 is not None else 0,
+        "kidz_zone":    kz_map.get(nbd, ""),
+        "e1_killed":    int(e1["killed"].iloc[0])    if len(e1) else 0,
+        "e1_injured":   int(e1["injured"].iloc[0])   if len(e1) else 0,
+        "e1_incidents": int(e1["incidents"].iloc[0]) if len(e1) else 0,
+        "e2_killed":    int(e2["killed"].iloc[0])    if len(e2) else 0,
+        "e2_injured":   int(e2["injured"].iloc[0])   if len(e2) else 0,
+        "e2_incidents": int(e2["incidents"].iloc[0]) if len(e2) else 0,
+        "is_unknown": False,
     }
     for yr in all_years:
         yr_row = by_year[(by_year["neighborhood"] == nbd) & (by_year["year"] == yr)]
@@ -64,20 +83,40 @@ for nbd in all_nbds:
 
     rows.append(row)
 
-# ── Build column header HTML ───────────────────────────────────────────────────
-era_headers = f"""
-    <th rowspan="2" class="nbd-col">Neighborhood</th>
-    <th colspan="3" class="era-header era1-header">{ERA1_LABEL}</th>
-    <th colspan="3" class="era-header era2-header">{ERA2_LABEL}</th>
-    {"".join(f'<th colspan="2" class="year-header">{yr}</th>' for yr in all_years)}
-"""
+# Unknown row goes at the end
+u_e1 = era1[era1["neighborhood"] == UNKNOWN]
+u_e2 = era2[era2["neighborhood"] == UNKNOWN]
+unknown_row = {
+    "neighborhood": UNKNOWN,
+    "kidz_zone":    "",
+    "e1_killed":    int(u_e1["killed"].iloc[0])    if len(u_e1) else 0,
+    "e1_injured":   int(u_e1["injured"].iloc[0])   if len(u_e1) else 0,
+    "e1_incidents": int(u_e1["incidents"].iloc[0]) if len(u_e1) else 0,
+    "e2_killed":    int(u_e2["killed"].iloc[0])    if len(u_e2) else 0,
+    "e2_injured":   int(u_e2["injured"].iloc[0])   if len(u_e2) else 0,
+    "e2_incidents": int(u_e2["incidents"].iloc[0]) if len(u_e2) else 0,
+    "is_unknown":   True,
+}
+for yr in all_years:
+    yr_row = by_year[(by_year["neighborhood"] == UNKNOWN) & (by_year["year"] == yr)]
+    unknown_row[f"{yr}_killed"]  = int(yr_row["killed"].iloc[0])  if len(yr_row) else 0
+    unknown_row[f"{yr}_injured"] = int(yr_row["injured"].iloc[0]) if len(yr_row) else 0
+rows.append(unknown_row)
 
-sub_headers = """
-    <th class="era1">Killed</th><th class="era1">Injured</th><th class="era1">Incidents</th>
-    <th class="era2">Killed</th><th class="era2">Injured</th><th class="era2">Incidents</th>
-""" + "".join(
-    f'<th class="yr-col">Killed</th><th class="yr-col">Injured</th>'
-    for _ in all_years
+# ── Build column headers ───────────────────────────────────────────────────────
+era_headers = (
+    '<th rowspan="2" class="nbd-col">Neighborhood</th>'
+    '<th rowspan="2" class="kz-col">Kidz Zone</th>'
+    f'<th colspan="3" class="era-header era1-header">{ERA1_LABEL}</th>'
+    f'<th colspan="3" class="era-header era2-header">{ERA2_LABEL}</th>'
+    + "".join(f'<th colspan="2" class="year-header">{yr}</th>' for yr in all_years)
+)
+
+sub_headers = (
+    '<th class="kz-sub"></th>'
+    '<th class="era1">Killed</th><th class="era1">Injured</th><th class="era1">Incidents</th>'
+    '<th class="era2">Killed</th><th class="era2">Injured</th><th class="era2">Incidents</th>'
+    + "".join('<th class="yr-col">Killed</th><th class="yr-col">Injured</th>' for _ in all_years)
 )
 
 # ── Build table rows HTML ──────────────────────────────────────────────────────
@@ -87,7 +126,10 @@ def cell(val, cls=""):
 
 tbody_rows = []
 for r in rows:
-    cells = f'<td class="nbd-name">{r["neighborhood"]}</td>'
+    row_cls = "unknown-row" if r["is_unknown"] else ("kz-row" if r["kidz_zone"] else "")
+    kz_label = f'<span class="kz-badge">{r["kidz_zone"]}</span>' if r["kidz_zone"] else ""
+    cells  = f'<td class="nbd-name">{r["neighborhood"]}</td>'
+    cells += f'<td class="kz-cell">{kz_label}</td>'
     cells += cell(r["e1_killed"],    "era1 killed")
     cells += cell(r["e1_injured"],   "era1")
     cells += cell(r["e1_incidents"], "era1")
@@ -97,9 +139,11 @@ for r in rows:
     for yr in all_years:
         cells += cell(r[f"{yr}_killed"],  "yr-col killed")
         cells += cell(r[f"{yr}_injured"], "yr-col")
-    tbody_rows.append(f"<tr>{cells}</tr>")
+    tbody_rows.append(f'<tr class="{row_cls}">{cells}</tr>')
 
 tbody = "\n".join(tbody_rows)
+
+kz_count = sum(1 for r in rows if r["kidz_zone"])
 
 # ── Assemble HTML ──────────────────────────────────────────────────────────────
 html = f"""<!DOCTYPE html>
@@ -130,7 +174,9 @@ html = f"""<!DOCTYPE html>
     .dataTables_wrapper .dataTables_info,
     .dataTables_wrapper .dataTables_paginate {{ color: #666; font-size: 0.82rem; }}
     .dataTables_wrapper .dataTables_paginate .paginate_button {{ color: #333 !important; }}
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {{ background: #e8e8e8 !important; color: #111 !important; border: 1px solid #bbb !important; }}
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {{
+      background: #e8e8e8 !important; color: #111 !important; border: 1px solid #bbb !important;
+    }}
 
     table.dataTable {{
       background: #fff;
@@ -166,6 +212,8 @@ html = f"""<!DOCTYPE html>
     }}
 
     .nbd-col  {{ min-width: 180px; text-align: left !important; }}
+    .kz-col   {{ min-width: 120px; text-align: left !important; }}
+    .kz-sub   {{ min-width: 120px; }}
     .nbd-name {{ color: #222; white-space: nowrap; font-weight: 500; }}
 
     .era1-header {{ background: #dbeafe !important; color: #1e40af !important; }}
@@ -178,11 +226,37 @@ html = f"""<!DOCTYPE html>
     td.killed {{ color: #c0392b; font-weight: 600; }}
     td.zero   {{ color: #bbb; }}
     span.zero {{ color: #bbb; }}
+
+    /* Kidz Zone rows */
+    tr.kz-row td {{ background-color: #fffbeb !important; }}
+    tr.kz-row:hover td {{ background-color: #fef3c7 !important; }}
+    .kz-badge {{
+      background: #f59e0b;
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }}
+    .kz-cell {{ white-space: nowrap; }}
+
+    /* Unknown row — muted, italic */
+    tr.unknown-row td {{
+      color: #999 !important;
+      font-style: italic;
+      background-color: #f9f9f9 !important;
+    }}
+    tr.unknown-row td.killed {{ color: #c0a0a0 !important; }}
   </style>
 </head>
 <body>
   <h1>Orlando Gun Violence — By Neighborhood</h1>
-  <p class="sub">Gun Violence Archive · 2014–2026 · Orlando, FL &nbsp;|&nbsp; Eras: {ERA1_LABEL} vs {ERA2_LABEL}</p>
+  <p class="sub">
+    Gun Violence Archive · 2014–2026 · Orlando, FL &nbsp;|&nbsp; Eras: {ERA1_LABEL} vs {ERA2_LABEL}
+    &nbsp;|&nbsp; <span style="background:#f59e0b;color:#fff;font-size:0.75rem;padding:1px 6px;border-radius:3px;font-weight:600;">KZ</span> = Kidz Zone neighborhood ({kz_count} neighborhoods)
+    &nbsp;|&nbsp; <em style="color:#999;">Italicized row</em> = incidents outside mapped boundaries
+  </p>
 
   <div style="overflow-x:auto;">
   <table id="nbd-table" class="display nowrap" style="width:100%">
@@ -201,15 +275,19 @@ html = f"""<!DOCTYPE html>
   <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
   <script>
     $(document).ready(function() {{
-      $('#nbd-table').DataTable({{
+      var table = $('#nbd-table').DataTable({{
         paging: true,
         pageLength: 25,
         scrollX: true,
-        fixedColumns: {{ leftColumns: 1 }},
-        order: [[1, 'desc']],
-        columnDefs: [{{ targets: 0, orderable: true }}],
-        language: {{
-          search: "Search neighborhoods:"
+        fixedColumns: {{ leftColumns: 2 }},
+        order: [[2, 'desc']],
+        columnDefs: [{{ targets: [0,1], orderable: true }}],
+        language: {{ search: "Search neighborhoods:" }},
+        rowCallback: function(row, data, index) {{
+          // Keep unknown row always at the bottom regardless of sort
+          if ($(row).hasClass('unknown-row')) {{
+            $(row).data('order', 9999);
+          }}
         }}
       }});
     }});
@@ -221,4 +299,5 @@ html = f"""<!DOCTYPE html>
 out = config.OUTPUT_MAPS / "neighborhood_table.html"
 out.write_text(html, encoding="utf-8")
 print(f"Saved: {out}")
-print(f"  {len(rows)} neighborhoods | {len(all_years)} years")
+print(f"  {len(rows)-1} named neighborhoods + 1 unknown row | {len(all_years)} years")
+print(f"  {kz_count} Kidz Zone neighborhoods: {sorted(kz_map.keys())}")
