@@ -38,10 +38,13 @@ HEAT MAP NOTE:
              comparing exact concentrations across neighborhoods.
 """
 
+import sys
 import json
 import pandas as pd
 import geopandas as gpd
 import folium
+
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 from folium.plugins import HeatMap, MarkerCluster, DualMap
 import numpy as np
 import branca.colormap as cm
@@ -165,7 +168,7 @@ def dot_layer(df, name, color, show=True):
 
 
 def shaped_layer(df, name, color, shape, show=True):
-    """Marker layer using a Unicode glyph (★ fatal, ✕ injury) with white outline."""
+    """Marker layer using a Unicode glyph (● fatal, ▲ injury) with white outline."""
     group = folium.FeatureGroup(name=name, show=show)
     for _, row in df.iterrows():
         popup = (
@@ -870,7 +873,7 @@ COLOR_AFTER  = "#0072B2"   # deep blue    — Wong colorblind-safe palette
 def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf, dark=False):
     """
     Single-map view of both eras.
-    Yellow ★/✕ = 2018-2022 (Before)  |  Blue ★/✕ = 2023-Present (After)
+    Yellow ●/▲ = 2018-2022 (Before)  |  Blue ●/▲ = 2023-Present (After)
     dark=True → CartoDB dark_matter tile + dark UI panels.
     Each version has a button linking to the other.
     """
@@ -970,10 +973,10 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf, dark=False):
 
     reg = {}
     for label, sub_df, color, shape in [
-        ("Before — Fatal shootings",  homicides(e1),   COLOR_BEFORE, "★"),
-        ("Before — Injury shootings", injury_only(e1), COLOR_BEFORE, "✕"),
-        ("After — Fatal shootings",   homicides(e2),   COLOR_AFTER,  "★"),
-        ("After — Injury shootings",  injury_only(e2), COLOR_AFTER,  "✕"),
+        ("Before — Fatal shootings",  homicides(e1),   COLOR_BEFORE, "●"),
+        ("Before — Injury shootings", injury_only(e1), COLOR_BEFORE, "▲"),
+        ("After — Fatal shootings",   homicides(e2),   COLOR_AFTER,  "●"),
+        ("After — Injury shootings",  injury_only(e2), COLOR_AFTER,  "▲"),
     ]:
         lyr = shaped_layer(sub_df, label, color, shape, show=True)
         lyr.add_to(m)
@@ -1003,12 +1006,12 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf, dark=False):
         f'background:{title_bg};color:{title_col};padding:6px 18px;border-radius:6px;'
         f'border:1px solid {title_border};z-index:1000;font-family:Arial,sans-serif;'
         f'font-size:13px;text-align:center;white-space:nowrap;">'
-        f'<span style="color:{COLOR_BEFORE};font-weight:bold;">★✕</span> '
+        f'<span style="color:{COLOR_BEFORE};font-weight:bold;">●▲</span> '
         f'Before {ERA_1_LABEL}: {k1:,} killed · {i1:,} injured'
         f'&nbsp;&nbsp;&nbsp;'
-        f'<span style="color:{COLOR_AFTER};font-weight:bold;">★✕</span> '
+        f'<span style="color:{COLOR_AFTER};font-weight:bold;">●▲</span> '
         f'After {ERA_2_LABEL}: {k2:,} killed · {i2:,} injured'
-        f'&nbsp;&nbsp; <small style="color:{sep_col};">★ fatal &nbsp; ✕ injury</small>'
+        f'&nbsp;&nbsp; <small style="color:{sep_col};">● fatal &nbsp; ▲ injury</small>'
         f'</div>'
     )
     m.get_root().html.add_child(folium.Element(title_html))
