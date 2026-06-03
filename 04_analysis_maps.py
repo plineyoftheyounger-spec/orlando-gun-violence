@@ -998,24 +998,8 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf, dark=False):
     kz_lyr.add_to(m)
     reg["Kidz Zone neighborhoods"] = kz_lyr.get_name()
 
-    # ── Title ─────────────────────────────────────────────────────────────────
     k1 = int(e1["killed"].sum()); i1 = int(e1["injured"].sum())
     k2 = int(e2["killed"].sum()); i2 = int(e2["injured"].sum())
-    title_html = (
-        f'<div style="position:fixed;top:10px;left:50%;transform:translateX(-50%);'
-        f'background:{title_bg};color:{title_col};padding:6px 16px;border-radius:6px;'
-        f'border:1px solid {title_border};z-index:1000;font-family:Arial,sans-serif;'
-        f'font-size:13px;text-align:center;white-space:nowrap;">'
-        f'<span style="color:{COLOR_BEFORE};font-weight:bold;">●</span> {ERA_1_LABEL} Injury ({i1:,})'
-        f'&nbsp;&nbsp;'
-        f'<span style="color:{COLOR_BEFORE};font-weight:bold;">▲</span> {ERA_1_LABEL} Fatal ({k1:,})'
-        f'&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;'
-        f'<span style="color:{COLOR_AFTER};font-weight:bold;">●</span> {ERA_2_LABEL} Injury ({i2:,})'
-        f'&nbsp;&nbsp;'
-        f'<span style="color:{COLOR_AFTER};font-weight:bold;">▲</span> {ERA_2_LABEL} Fatal ({k2:,})'
-        f'</div>'
-    )
-    m.get_root().html.add_child(folium.Element(title_html))
 
     # ── Control bar + search ───────────────────────────────────────────────────
     map_id      = m.get_name()
@@ -1028,7 +1012,7 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf, dark=False):
     html = f"""
 <style>
   #um-control {{
-    position:fixed; top:46px; left:50%; transform:translateX(-50%);
+    position:fixed; top:10px; left:50%; transform:translateX(-50%);
     background:{ui_bg}; border:1px solid {ui_border}; color:{ui_text};
     border-radius:8px; padding:8px 16px; z-index:1000;
     font-family:Arial,sans-serif; font-size:13px;
@@ -1048,6 +1032,7 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf, dark=False):
   #um-control input[type=search]::placeholder {{ color:{sep_col}; }}
   .sym-before {{ color:{COLOR_BEFORE}; font-weight:bold; }}
   .sym-after  {{ color:{COLOR_AFTER};  font-weight:bold; }}
+  .counts     {{ color:{sep_col}; font-size:11px; margin-left:4px; }}
   .theme-btn {{
     padding:3px 10px; background:{ui_border}; color:{ui_text};
     border:1px solid {ui_border}; border-radius:4px; font-size:12px;
@@ -1072,9 +1057,11 @@ def make_unified_map(df, neighborhoods_gdf, kidz_zones_gdf, dark=False):
 <div id="um-control">
   <span><b>Era:</b></span>
   <label><input type="checkbox" id="cb-before" checked>
-    <span class="sym-before">&#9679;&#9650;</span> Before 2018&#x2013;2022</label>
+    <span class="sym-before">&#9679;&#9650;</span> Before 2018&#x2013;2022
+    <span class="counts">&#9650;&nbsp;{k1:,}&nbsp;fatal&nbsp;&nbsp;&#9679;&nbsp;{i1:,}&nbsp;injured</span></label>
   <label><input type="checkbox" id="cb-after" checked>
-    <span class="sym-after">&#9679;&#9650;</span> After 2023&#x2013;Present</label>
+    <span class="sym-after">&#9679;&#9650;</span> After 2023&#x2013;Present
+    <span class="counts">&#9650;&nbsp;{k2:,}&nbsp;fatal&nbsp;&nbsp;&#9679;&nbsp;{i2:,}&nbsp;injured</span></label>
   <span class="sep">|</span>
   <span><b>Type:</b></span>
   <label><input type="checkbox" id="cb-fatal" checked> Fatal &#9650;</label>
